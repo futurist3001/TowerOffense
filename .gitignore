@@ -1,0 +1,8 @@
+# UE files that must be ignore by git
+Saved/
+Intermediate/
+DerivedDataCache/
+.vs/
+*.vsconfig
+*.sln
+Binaries/
