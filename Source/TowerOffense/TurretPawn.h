@@ -54,8 +54,8 @@ public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
-	virtual void PostInitializeComponents() override;
-	//virtual void OnConstruction(const FTransform& Transform) override;
+	//virtual void PostInitializeComponents() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 private:
 	UFUNCTION()
@@ -74,8 +74,8 @@ private:
 	
 	TArray<FName> GetMaterialParameterOptions(UStaticMeshComponent* InputComponentParameter) const;
 
-	void SetMeshMaterial(UStaticMeshComponent* InputMeshComponent, FName& MeshMaterialSlotName, 
-		FName& MaterialParameterName, FLinearColor& Color, 
+	void SetMeshMaterial(UStaticMeshComponent* InputMeshComponent, const FName& MeshMaterialSlotName, 
+		const FName& MaterialParameterName, const FLinearColor& Color, 
 		UMaterialInstanceDynamic* DynamicMaterialInstance);
 
 };
