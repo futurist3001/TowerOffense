@@ -2,7 +2,7 @@
 #include "Components/CapsuleComponent.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -18,7 +18,6 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	ProjectileSpawnPoint->SetupAttachment(RootComponent);
 }
 
-
 TArray<FName> ATurretPawn::GetBaseMeshMaterialSlotOptions() const
 {
 	return GetMaterialSlotOptions(BaseMesh);
@@ -29,16 +28,13 @@ TArray<FName> ATurretPawn::GetTurretMeshMaterialSlotOptions() const
 	return GetMaterialSlotOptions(TurretMesh);
 }
 
-TArray<FName> ATurretPawn::GetMaterialSlotOptions(UStaticMeshComponent* InputComponentSlot) const
+TArray<FName> ATurretPawn::GetMaterialSlotOptions(const UStaticMeshComponent* InputComponentSlot)
 {
 	TArray<FName> OptionSlotNames;
 
-	UStaticMesh* StaticMeshComponent = InputComponentSlot->GetStaticMesh();
-
-	if (StaticMeshComponent)
+	if (const UStaticMesh* StaticMeshComponent = InputComponentSlot->GetStaticMesh())
 	{
-		const auto& Materials = StaticMeshComponent->GetStaticMaterials();
-		for (const FStaticMaterial& Material : Materials)
+		for (const FStaticMaterial& Material : StaticMeshComponent->GetStaticMaterials())
 		{
 			OptionSlotNames.Add(Material.MaterialSlotName);
 		}
@@ -49,33 +45,27 @@ TArray<FName> ATurretPawn::GetMaterialSlotOptions(UStaticMeshComponent* InputCom
 
 TArray<FName> ATurretPawn::GetBaseMeshMaterialParameterOptions() const
 {
-	return GetMaterialParameterOptions(BaseMesh);
+	return GetMaterialParameterOptions(BaseMesh, BaseMeshMaterialSlotName);
 }
 
 TArray<FName> ATurretPawn::GetTurretMeshMaterialParameterOptions() const
 {
-	return GetMaterialParameterOptions(TurretMesh);
+	return GetMaterialParameterOptions(TurretMesh, TurretMeshMaterialSlotName);
 }
 
-TArray<FName> ATurretPawn::GetMaterialParameterOptions(UStaticMeshComponent* InputComponentParameter) const
+TArray<FName> ATurretPawn::GetMaterialParameterOptions(
+	UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName)
 {
 	TArray<FName> OptionParameterNames;
-	
-	TArray<FMaterialParameterInfo> MaterialParameterInfo;
-	TArray<FGuid> Guid;
 
-	UStaticMesh* StaticMeshComponent = InputComponentParameter->GetStaticMesh();
-
-	if (StaticMeshComponent)
+	if (const UStaticMesh* StaticMeshComponent = InputComponentParameter->GetStaticMesh())
 	{
-		int32 MaterialIndex = StaticMeshComponent->GetMaterialIndex(BaseMeshMaterialSlotName);
+		int32 MaterialIndex = StaticMeshComponent->GetMaterialIndex(MeshMaterialSlotName);
+		MaterialIndex = FMath::Max(MaterialIndex, 0);
 
-		if (MaterialIndex < 0)
-		{
-			MaterialIndex = 0;
-		}
-
-		UMaterialInterface* Material = StaticMeshComponent->GetMaterial(MaterialIndex);
+		const UMaterialInterface* Material = StaticMeshComponent->GetMaterial(MaterialIndex);
+		TArray<FMaterialParameterInfo> MaterialParameterInfo;
+		TArray<FGuid> Guid;
 
 		Material->GetAllVectorParameterInfo(MaterialParameterInfo, Guid);
 
@@ -88,32 +78,22 @@ TArray<FName> ATurretPawn::GetMaterialParameterOptions(UStaticMeshComponent* Inp
 	return OptionParameterNames;
 }
 
-void ATurretPawn::SetMeshMaterial(UStaticMeshComponent* InputMeshComponent, const FName& MeshMaterialSlotName,
-	const FName& MaterialParameterName, const FLinearColor& Color,
-	UMaterialInstanceDynamic* DynamicMaterialInstance)
+void ATurretPawn::SetMeshMaterial(
+	UStaticMeshComponent* MeshComponent, FName MeshMaterialSlotName, FName MaterialParameterName,
+	const FLinearColor& Color, UMaterialInstanceDynamic*& DynamicMaterialInstance)
 {
-	int32 MaterialIndex = InputMeshComponent->GetMaterialIndex(MeshMaterialSlotName);
-	UMaterialInterface* Material = InputMeshComponent->GetMaterial(MaterialIndex);
+	const int32 MaterialIndex = MeshComponent->GetMaterialIndex(MeshMaterialSlotName);
+	UMaterialInterface* Material = MeshComponent->GetMaterial(MaterialIndex);
 
 	DynamicMaterialInstance = UMaterialInstanceDynamic::Create(Material, this);
 	DynamicMaterialInstance->SetVectorParameterValue(MaterialParameterName, Color);
-	InputMeshComponent->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+	MeshComponent->SetMaterial(MaterialIndex, DynamicMaterialInstance);
 }
 
-/*void ATurretPawn::PostInitializeComponents()
+// using OnConstruction() leads to unpredictable results
+void ATurretPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	SetMeshMaterial(BaseMesh, BaseMeshMaterialSlotName,
-		BaseMaterialParameterName, BaseColor, BaseDynamicMaterialInstance);
-
-	SetMeshMaterial(TurretMesh, TurretMeshMaterialSlotName,
-		TurretMaterialParameterName, TurretColor, TurretDynamicMaterialInstance);
-}*/
-
-void ATurretPawn::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
 
 	SetMeshMaterial(BaseMesh, BaseMeshMaterialSlotName,
 		BaseMaterialParameterName, BaseColor, BaseDynamicMaterialInstance);

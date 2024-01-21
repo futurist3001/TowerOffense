@@ -1,5 +1,4 @@
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
@@ -14,7 +13,7 @@ class TOWEROFFENSE_API ATurretPawn : public APawn
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UCapsuleComponent* CapsuleComponent;
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
@@ -25,6 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USceneComponent> ProjectileSpawnPoint;
 
+protected:
 	UPROPERTY(EditAnywhere, Category = "Base", meta = (GetOptions = "GetBaseMeshMaterialSlotOptions"))
 	FName BaseMeshMaterialSlotName;
 
@@ -44,18 +44,17 @@ public:
 	FLinearColor TurretColor;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* TurretDynamicMaterialInstance;
 
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
-	//virtual void PostInitializeComponents() override;
-	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostInitializeComponents() override;
 
 private:
 	UFUNCTION()
@@ -64,7 +63,7 @@ private:
 	UFUNCTION()
 	TArray<FName> GetTurretMeshMaterialSlotOptions() const;
 
-	TArray<FName> GetMaterialSlotOptions(UStaticMeshComponent* InputComponentSlot) const;
+	static TArray<FName> GetMaterialSlotOptions(const UStaticMeshComponent* InputComponentSlot);
 
 	UFUNCTION()
 	TArray<FName> GetBaseMeshMaterialParameterOptions() const;
@@ -72,10 +71,11 @@ private:
 	UFUNCTION()
 	TArray<FName> GetTurretMeshMaterialParameterOptions() const;
 	
-	TArray<FName> GetMaterialParameterOptions(UStaticMeshComponent* InputComponentParameter) const;
+	static TArray<FName> GetMaterialParameterOptions(
+		UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName);
 
-	void SetMeshMaterial(UStaticMeshComponent* InputMeshComponent, const FName& MeshMaterialSlotName, 
-		const FName& MaterialParameterName, const FLinearColor& Color, 
-		UMaterialInstanceDynamic* DynamicMaterialInstance);
+	void SetMeshMaterial(
+		UStaticMeshComponent* MeshComponent, FName MeshMaterialSlotName, FName MaterialParameterName,
+		const FLinearColor& Color, UMaterialInstanceDynamic*& DynamicMaterialInstance);
 
 };
