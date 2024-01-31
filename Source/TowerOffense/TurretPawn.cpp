@@ -82,12 +82,15 @@ void ATurretPawn::SetMeshMaterial(
 	UStaticMeshComponent* MeshComponent, FName MeshMaterialSlotName, FName MaterialParameterName,
 	const FLinearColor& Color, UMaterialInstanceDynamic*& DynamicMaterialInstance)
 {
-	const int32 MaterialIndex = MeshComponent->GetMaterialIndex(MeshMaterialSlotName);
-	UMaterialInterface* Material = MeshComponent->GetMaterial(MaterialIndex);
+	if (IsValid(MeshComponent))
+	{
+		const int32 MaterialIndex = MeshComponent->GetMaterialIndex(MeshMaterialSlotName);
+		UMaterialInterface* Material = MeshComponent->GetMaterial(MaterialIndex);
 
-	DynamicMaterialInstance = UMaterialInstanceDynamic::Create(Material, this);
-	DynamicMaterialInstance->SetVectorParameterValue(MaterialParameterName, Color);
-	MeshComponent->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(Material, this);
+		DynamicMaterialInstance->SetVectorParameterValue(MaterialParameterName, Color);
+		MeshComponent->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+	}
 }
 
 // using OnConstruction() leads to unpredictable results
