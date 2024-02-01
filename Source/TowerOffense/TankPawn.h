@@ -16,22 +16,22 @@ class TOWEROFFENSE_API ATankPawn : public ATurretPawn
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	USpringArmComponent* SpringArmComponent;
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	UCameraComponent* CameraComponent;
+	TObjectPtr<UCameraComponent> CameraComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputMappingContext* TankMappingContext;
+	TObjectPtr<UInputMappingContext> TankMappingContext;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* MoveForwardAction;
+	TObjectPtr<UInputAction> MoveForwardAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* TurnRightAction;
+	TObjectPtr<UInputAction> TurnRightAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* FireAction;
+	TObjectPtr<UInputAction> FireAction;
 
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
