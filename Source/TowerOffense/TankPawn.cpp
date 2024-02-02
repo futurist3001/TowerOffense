@@ -4,6 +4,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -18,14 +19,17 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 
 void ATankPawn::Move(const FInputActionValue& Value)
 {
+	UKismetSystemLibrary::PrintString(this, "Move", true, false, FColor::Blue, 5.f);
 }
 
 void ATankPawn::Turn(const FInputActionValue& Value)
 {
+	UKismetSystemLibrary::PrintString(this, "Turn", true, false, FColor::Green, 5.f);
 }
 
 void ATankPawn::Fire()
 {
+	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 5.f);
 }
 
 void ATankPawn::BeginPlay()
