@@ -4,10 +4,13 @@
 
 #include "TankPawn.generated.h"
 
-class USpringArmComponent;
+struct FHitResult;
+struct FInputActionValue;
+struct FInputActionInstance;
 class UCameraComponent;
-class UInputMappingContext;
 class UInputAction;
+class UInputMappingContext;
+class USpringArmComponent;
 
 UCLASS()
 class TOWEROFFENSE_API ATankPawn : public ATurretPawn
@@ -33,19 +36,37 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
 
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float AccelerationDuration;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float Speed;
+
+private:
+	FVector MovementVector;
+	FVector PreviousMovementVector; // previous pressed button 
+	int DoOnce;
+	float CurrentTime;
+	float CurrentSpeed;
+	float SpeedStopGas; // Speed after acceleration
+	float SpeedStopBraking; // Speed after braking
+	int32 bIsStopMoving;
+	FHitResult* OutSweepHitResult; // hit for local offset and local rotatiion
+	FHitResult HitResult; // hit result for cursor direction
+
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
-	UFUNCTION(BlueprintCallable)
-	void Move(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintCallable)
-	void Turn(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintCallable)
-	void Fire();
-
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void RotateTurret() override;
+
+	void MoveTriggeredValue(const FInputActionValue& Value);
+	void MoveTriggeredInstance(const FInputActionInstance& Instance);
+	void MoveCompleted();
+
+	void Turn(const FInputActionValue& Value);
+	void Fire(const FInputActionInstance& Instance);
 };

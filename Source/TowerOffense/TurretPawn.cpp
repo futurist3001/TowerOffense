@@ -1,5 +1,7 @@
 #include "TurretPawn.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -54,7 +56,7 @@ TArray<FName> ATurretPawn::GetTurretMeshMaterialParameterOptions() const
 }
 
 TArray<FName> ATurretPawn::GetMaterialParameterOptions(
-	UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName)
+	const UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName)
 {
 	TArray<FName> OptionParameterNames;
 
@@ -93,6 +95,13 @@ void ATurretPawn::SetMeshMaterial(
 	}
 }
 
+void ATurretPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	RotationCurrentTime = DeltaTime;
+}
+
 // using OnConstruction() leads to unpredictable results
 void ATurretPawn::PostInitializeComponents()
 {
@@ -103,4 +112,10 @@ void ATurretPawn::PostInitializeComponents()
 
 	SetMeshMaterial(TurretMesh, TurretMeshMaterialSlotName,
 		TurretMaterialParameterName, TurretColor, TurretDynamicMaterialInstance);
+}
+
+void ATurretPawn::RotateTurret()
+{
+	TurretMesh->SetRelativeRotation(
+		FMath::RInterpTo(TurretMesh->GetRelativeRotation(), TargetAngle, RotationCurrentTime, 0.5f));
 }

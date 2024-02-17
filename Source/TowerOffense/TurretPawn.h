@@ -5,6 +5,7 @@
 #include "TurretPawn.generated.h"
 
 class UCapsuleComponent;
+struct FInputActionValue;
 
 UCLASS()
 class TOWEROFFENSE_API ATurretPawn : public APawn
@@ -43,18 +44,22 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	FLinearColor TurretColor;
 
-protected:
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* TurretDynamicMaterialInstance;
 
+	FRotator TargetAngle; // cursor rotator
+	float RotationCurrentTime;
+
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
+	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
+	virtual void RotateTurret();
 
 private:
 	UFUNCTION()
@@ -72,7 +77,7 @@ private:
 	TArray<FName> GetTurretMeshMaterialParameterOptions() const;
 	
 	static TArray<FName> GetMaterialParameterOptions(
-		UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName);
+		const UStaticMeshComponent* InputComponentParameter, FName MeshMaterialSlotName);
 
 	void SetMeshMaterial(
 		UStaticMeshComponent* MeshComponent, FName MeshMaterialSlotName, FName MaterialParameterName,
