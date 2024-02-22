@@ -80,8 +80,9 @@ void ATankPawn::RotateTurret()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(
 		ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
 	{
-		FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), HitResult.Location);
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(FRotator(0.f, NewRotator.Yaw, 0.f)); // I didn`t receive the result
+		FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), HitResult.ImpactPoint);
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(
+			FMath::RInterpTo(GetControlRotation(), FRotator(0.f, NewRotator.Yaw, 0.f), RotationCurrentTime, 0.5f));
 
 		TargetAngle = FRotator(0.f, NewRotator.Yaw, 0.f);
 	}
@@ -121,7 +122,7 @@ void ATankPawn::Tick(float DeltaTime)
 	DrawDebugSphere(GetWorld(), HitResult.Location, 20, 5, FColor(181, 0, 0), false, 0.5f, 0, 0.5);
 
 	UKismetSystemLibrary::PrintString(
-		this, FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), HitResult.Location.X, HitResult.Location.Y, HitResult.Location.Z),
+		this, FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z),
 		true, false, FColor::Blue, DeltaTime);
 }
 

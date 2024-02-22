@@ -48,8 +48,8 @@ private:
 	int DoOnce;
 	float CurrentTime;
 	float CurrentSpeed;
-	float SpeedStopGas; // Speed after acceleration
-	float SpeedStopBraking; // Speed after braking
+	float SpeedStopGas; // speed after acceleration
+	float SpeedStopBraking; // speed after braking
 	int32 bIsStopMoving;
 	FHitResult* OutSweepHitResult; // hit for local offset and local rotatiion
 	FHitResult HitResult; // hit result for cursor direction
