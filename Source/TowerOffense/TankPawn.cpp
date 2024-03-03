@@ -10,7 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
