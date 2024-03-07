@@ -44,6 +44,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	FLinearColor TurretColor;
 
+	UPROPERTY(EditAnywhere, Category = "Turret")
+	float SpeedTurretRotation;
+
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 

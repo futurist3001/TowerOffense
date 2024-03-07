@@ -45,13 +45,12 @@ protected:
 private:
 	FVector MovementVector;
 	FVector PreviousMovementVector; // previous pressed button 
-	int DoOnce;
+	uint8 DoOnce : 1;
 	float CurrentTime;
 	float CurrentSpeed;
 	float SpeedStopGas; // speed after acceleration
 	float SpeedStopBraking; // speed after braking
 	uint8 bIsStopMoving : 1;
-	FHitResult* OutSweepHitResult; // hit for local offset and local rotatiion
 	FHitResult HitResult; // hit result for cursor direction
 
 public:

@@ -8,9 +8,11 @@ ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("ShootingZone"));
 	SphereComponent->SetupAttachment(RootComponent);
+
+	DoOnce = true;
+	TimeFire = 0.f;
 }
 
 void ATowerPawn::BeginPlay()
@@ -19,27 +21,36 @@ void ATowerPawn::BeginPlay()
 
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBeginOverlap);
 	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnEndOverlap);
+
+	OverllapedActor.Empty();
 }
 
 void ATowerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bOverlapped)
+	if (!OverllapedActor.IsEmpty())
 	{
 		RotateTurret();
 
+		UKismetSystemLibrary::PrintString(this, TargetAngle.ToString(), true, false, FColor::Black, DeltaTime);
+
 		UKismetSystemLibrary::PrintString(
-			this, FString::Printf(TEXT("Pitch: %f, Yaw: %f, Roll: %f"), TargetAngle.Pitch, TargetAngle.Yaw, TargetAngle.Roll),
-			true, false, FColor::Black, DeltaTime);
+			this, OverllapedActor[0]->GetActorLocation().ToString(), true, false, FColor::Turquoise, DeltaTime);
+
+		TimeFire += DeltaTime;
+
+		if (TimeFire > 5.f)
+		{
+			Fire();
+			TimeFire = 0.f;
+		}
 	}
 
-
-	UKismetSystemLibrary::PrintString(
-		this, FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), 
-			OverllapedActor->GetActorLocation().X, OverllapedActor->GetActorLocation().Y, OverllapedActor->GetActorLocation().Z),
-		true, false, FColor::Turquoise, DeltaTime);
-
+	if (OverllapedActor.IsEmpty())
+	{
+		TimeFire = 0.f;
+	}
 }
 
 void ATowerPawn::RotateTurret()
@@ -47,25 +58,38 @@ void ATowerPawn::RotateTurret()
 	Super::RotateTurret();
 
 	FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(
-		this->GetActorLocation(), OverllapedActor->GetActorLocation());
+		this->GetActorLocation(), OverllapedActor[0]->GetActorLocation());
 
-	TargetAngle = FRotator(0.f, NewRotator.Yaw, 0.f);
+	TargetAngle = FRotator(0.f, NewRotator.Yaw - 90, 0.f);
+}
+
+void ATowerPawn::Fire()
+{
+	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
 }
 
 void ATowerPawn::OnBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-		UKismetSystemLibrary::PrintString(this, "Overlap", true, false, FColor::Black, 5.f);
+	UKismetSystemLibrary::PrintString(this, "Overlap", true, false, FColor::Black, 5.f);
 
-		bOverlapped = true;
-		OverllapedActor = OtherActor;
+	if (OtherActor && OtherActor->IsA<APawn>())
+	{
+		if (!DoOnce)
+		{
+			OverllapedActor.Add(OtherActor);
+			DoOnce = true;
+		}
+	}
 }
 
 void ATowerPawn::OnEndOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	bOverlapped = false;
+	DoOnce = false;
 
+	// if the actor leave shooting zone, overlapped actor must be deleted from array
+	OverllapedActor.RemoveSingle(OtherActor);
 }

@@ -1,7 +1,5 @@
 #include "TurretPawn.h"
 #include "Components/CapsuleComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -16,8 +14,10 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	SetRootComponent(CapsuleComponent);
 
 	BaseMesh->SetupAttachment(RootComponent);
-	TurretMesh->SetupAttachment(RootComponent);
-	ProjectileSpawnPoint->SetupAttachment(RootComponent);
+	TurretMesh->SetupAttachment(BaseMesh);
+	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
+
+	SpeedTurretRotation = 0.5f;
 }
 
 TArray<FName> ATurretPawn::GetBaseMeshMaterialSlotOptions() const
@@ -117,5 +117,5 @@ void ATurretPawn::PostInitializeComponents()
 void ATurretPawn::RotateTurret()
 {
 	TurretMesh->SetRelativeRotation(
-		FMath::RInterpTo(TurretMesh->GetRelativeRotation(), TargetAngle, RotationCurrentTime, 0.5f));
+		FMath::RInterpTo(TurretMesh->GetRelativeRotation(), TargetAngle, RotationCurrentTime, SpeedTurretRotation));
 }

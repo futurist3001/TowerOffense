@@ -19,8 +19,8 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
-	OutSweepHitResult = nullptr;
 	bIsStopMoving = false;
+	DoOnce = false;
 }
 
 void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
@@ -29,14 +29,14 @@ void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 
 	MovementVector = Value.Get<FVector>();
 
-	if (DoOnce < 1)
+	if (!DoOnce)
 	{
 		if (MovementVector == PreviousMovementVector)
 		{
 			SpeedStopBraking *= -1;
 		}
 
-		++DoOnce;
+		DoOnce = true;
 	}
 }
 
@@ -46,7 +46,7 @@ void ATankPawn::MoveTriggeredInstance(const FInputActionInstance& Instance)
 
 	CurrentTime = Instance.GetElapsedTime();
 	CurrentSpeed = FMath::Lerp(SpeedStopBraking, Speed, FMath::Clamp(CurrentTime / AccelerationDuration, 0.f, 1.f));
-	AddActorLocalOffset(MovementVector * CurrentSpeed, true, OutSweepHitResult);
+	AddActorLocalOffset(MovementVector * CurrentSpeed, true, nullptr);
 
 	SpeedStopGas = CurrentSpeed;
 }
@@ -55,7 +55,7 @@ void ATankPawn::MoveCompleted()
 {
 	bIsStopMoving = true;
 	CurrentTime = 0;
-	DoOnce = 0;
+	DoOnce = false;
 
 	PreviousMovementVector = MovementVector;
 }
@@ -65,7 +65,8 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 	UKismetSystemLibrary::PrintString(this, "Turn", true, false, FColor::Green, 5.f);
 
 	const float Rotator = Value.Get<float>();
-	AddActorLocalRotation(FRotator(0, Rotator, 0), true, OutSweepHitResult);
+	AddActorLocalRotation(FRotator(0.f, Rotator, 0.f), true, nullptr);
+	TurretMesh->AddLocalRotation(FRotator(0.f, -Rotator, 0.f), false, nullptr);
 }
 
 void ATankPawn::Fire(const FInputActionInstance& Instance)
@@ -80,19 +81,17 @@ void ATankPawn::RotateTurret()
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(
 		ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
 	{
-		FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), HitResult.ImpactPoint);
+		FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), HitResult.ImpactPoint);
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(
-			FMath::RInterpTo(GetControlRotation(), FRotator(0.f, NewRotator.Yaw, 0.f), RotationCurrentTime, 0.5f));
+			FMath::RInterpTo(GetControlRotation(), FRotator(0.f, NewRotator.Yaw, 0.f), RotationCurrentTime, SpeedTurretRotation));
 
-		TargetAngle = FRotator(0.f, NewRotator.Yaw, 0.f);
+		TargetAngle = FRotator(0.f, NewRotator.Yaw + 180.f, 0.f);
 	}
 }
 
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	DoOnce = 0;
 
 	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -112,7 +111,8 @@ void ATankPawn::Tick(float DeltaTime)
 	{
 		CurrentTime += DeltaTime;
 		CurrentSpeed = FMath::Lerp(SpeedStopGas, 0, FMath::Clamp(CurrentTime / AccelerationDuration, 0.f, 1.f));
-		AddActorLocalOffset(MovementVector * CurrentSpeed, true, OutSweepHitResult);
+		AddActorLocalOffset(MovementVector * CurrentSpeed, true, nullptr);
+
 
 		SpeedStopBraking = -CurrentSpeed;
 	}
