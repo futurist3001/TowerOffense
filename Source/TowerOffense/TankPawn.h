@@ -61,11 +61,11 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void RotateTurret() override;
+	void Fire() override;
 
 	void MoveTriggeredValue(const FInputActionValue& Value);
 	void MoveTriggeredInstance(const FInputActionInstance& Instance);
 	void MoveCompleted();
 
 	void Turn(const FInputActionValue& Value);
-	void Fire(const FInputActionInstance& Instance);
 };

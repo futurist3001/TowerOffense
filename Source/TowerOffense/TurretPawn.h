@@ -63,6 +63,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual void RotateTurret();
+	virtual void Fire();
 
 private:
 	UFUNCTION()

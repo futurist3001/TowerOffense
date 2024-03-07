@@ -65,7 +65,9 @@ void ATowerPawn::RotateTurret()
 
 void ATowerPawn::Fire()
 {
-	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
+	Super::Fire();
+
+
 }
 
 void ATowerPawn::OnBeginOverlap(

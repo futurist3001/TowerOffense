@@ -69,9 +69,11 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 	TurretMesh->AddLocalRotation(FRotator(0.f, -Rotator, 0.f), false, nullptr);
 }
 
-void ATankPawn::Fire(const FInputActionInstance& Instance)
+void ATankPawn::Fire()
 {
-	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 5.f);
+	Super::Fire();
+
+
 }
 
 void ATankPawn::RotateTurret()

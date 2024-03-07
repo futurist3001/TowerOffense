@@ -1,5 +1,6 @@
 #include "TurretPawn.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -118,4 +119,9 @@ void ATurretPawn::RotateTurret()
 {
 	TurretMesh->SetRelativeRotation(
 		FMath::RInterpTo(TurretMesh->GetRelativeRotation(), TargetAngle, RotationCurrentTime, SpeedTurretRotation));
+}
+
+void ATurretPawn::Fire()
+{
+	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
 }

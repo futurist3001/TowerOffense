@@ -30,8 +30,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void RotateTurret() override;
-
-	void Fire();
+	void Fire() override;
 
 private:
 	UFUNCTION()
