@@ -1,11 +1,11 @@
 #include "TankPawn.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -19,8 +19,15 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
+	CurrentTime = 0.f;
+	CurrentSpeed = 0.f;
+	SpeedStopGas = 0.f;
+	SpeedStopBraking = 0.f;
+	YawTurnRotator = 0.f;
+	YawCameraRotator = 0.f;
+
 	bIsStopMoving = false;
-	DoOnce = false;
+	bReverseAttempt = false;
 }
 
 void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
@@ -29,14 +36,13 @@ void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 
 	MovementVector = Value.Get<FVector>();
 
-	if (!DoOnce)
+	if (!bReverseAttempt)
 	{
 		if (MovementVector == PreviousMovementVector)
 		{
 			SpeedStopBraking *= -1;
 		}
-
-		DoOnce = true;
+		bReverseAttempt = true;
 	}
 }
 
@@ -55,7 +61,7 @@ void ATankPawn::MoveCompleted()
 {
 	bIsStopMoving = true;
 	CurrentTime = 0;
-	DoOnce = false;
+	bReverseAttempt = false;
 
 	PreviousMovementVector = MovementVector;
 }
@@ -64,43 +70,45 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 {
 	UKismetSystemLibrary::PrintString(this, "Turn", true, false, FColor::Green, 5.f);
 
-	const float Rotator = Value.Get<float>();
-	AddActorLocalRotation(FRotator(0.f, Rotator, 0.f), true, nullptr);
-	TurretMesh->AddLocalRotation(FRotator(0.f, -Rotator, 0.f), false, nullptr);
+	YawTurnRotator = Value.Get<float>();
+	AddActorLocalRotation(FRotator(0.f, YawTurnRotator, 0.f), true, nullptr);
+
+	TurretMesh->AddLocalRotation(FRotator(0.f, -YawTurnRotator, 0.f), false, nullptr);
+	TargetAngle.Yaw -= YawTurnRotator;
 }
 
 void ATankPawn::Fire()
 {
 	Super::Fire();
-
-
 }
 
 void ATankPawn::RotateTurret()
 {
 	Super::RotateTurret();
+}
 
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(
-		ETraceTypeQuery::TraceTypeQuery1, false, HitResult))
-	{
-		FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), HitResult.ImpactPoint);
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(
-			FMath::RInterpTo(GetControlRotation(), FRotator(0.f, NewRotator.Yaw, 0.f), RotationCurrentTime, SpeedTurretRotation));
+void ATankPawn::Rotate(const FInputActionValue& Value)
+{
+	float RotateValue = Value.Get<float>();
+	YawCameraRotator += RotateValue;
+	TargetAngle.Yaw += RotateValue;
 
-		TargetAngle = FRotator(0.f, NewRotator.Yaw + 180.f, 0.f);
-	}
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator + 180.f, 0.f));
 }
 
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	if (const auto* PlayerController = Cast<APlayerController>(GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
 		{
-			Subsystem->AddMappingContext(TankMappingContext, 0);
+			if (auto* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+			{
+				Subsystem->AddMappingContext(TankMappingContext, 0);
+			}
 		}
 	}
 }
@@ -115,17 +123,15 @@ void ATankPawn::Tick(float DeltaTime)
 		CurrentSpeed = FMath::Lerp(SpeedStopGas, 0, FMath::Clamp(CurrentTime / AccelerationDuration, 0.f, 1.f));
 		AddActorLocalOffset(MovementVector * CurrentSpeed, true, nullptr);
 
-
 		SpeedStopBraking = -CurrentSpeed;
 	}
 
 	RotateTurret();
 
-	DrawDebugSphere(GetWorld(), HitResult.Location, 20, 5, FColor(181, 0, 0), false, 0.5f, 0, 0.5);
-
 	UKismetSystemLibrary::PrintString(
-		this, FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z),
-		true, false, FColor::Blue, DeltaTime);
+		this, TargetAngle.ToString(), true, false, FColor::Purple, DeltaTime);
+
+	DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 35, 15, FColor::Purple, false, 0.04f, 0, 0.5);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -139,6 +145,7 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Completed, this, &ATankPawn::MoveCompleted);
 
 		EnhancedInputComponent->BindAction(TurnRightAction, ETriggerEvent::Triggered, this, &ATankPawn::Turn);
+		EnhancedInputComponent->BindAction(RotateTurretAction, ETriggerEvent::Triggered, this, &ATankPawn::Rotate);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ATankPawn::Fire);
 	}
 }

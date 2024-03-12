@@ -11,16 +11,15 @@ UCLASS()
 class TOWEROFFENSE_API ATowerPawn : public ATurretPawn
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(Transient)
-	TArray<AActor*> OverllapedActor;
+	TArray<AActor*> OverlapedActor;
 
 private:
-	int8 DoOnce : 1;
 	float TimeFire;
 
 public:
@@ -29,8 +28,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	void RotateTurret() override;
-	void Fire() override;
+	virtual void RotateTurret() override;
+	virtual void Fire() override;
 
 private:
 	UFUNCTION()
@@ -42,5 +41,4 @@ private:
 	void OnEndOverlap(
 		UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
-
 };

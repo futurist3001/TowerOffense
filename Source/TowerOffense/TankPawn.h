@@ -4,19 +4,19 @@
 
 #include "TankPawn.generated.h"
 
-struct FHitResult;
-struct FInputActionValue;
-struct FInputActionInstance;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class USpringArmComponent;
+struct FHitResult;
+struct FInputActionValue;
+struct FInputActionInstance;
 
 UCLASS()
 class TOWEROFFENSE_API ATankPawn : public ATurretPawn
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
@@ -34,6 +34,9 @@ protected:
 	TObjectPtr<UInputAction> TurnRightAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> RotateTurretAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
@@ -44,14 +47,15 @@ protected:
 
 private:
 	FVector MovementVector;
-	FVector PreviousMovementVector; // previous pressed button 
-	uint8 DoOnce : 1;
+	FVector PreviousMovementVector; // previous pressed button
 	float CurrentTime;
 	float CurrentSpeed;
 	float SpeedStopGas; // speed after acceleration
 	float SpeedStopBraking; // speed after braking
+	float YawCameraRotator;
+	float YawTurnRotator;
 	uint8 bIsStopMoving : 1;
-	FHitResult HitResult; // hit result for cursor direction
+	uint8 bReverseAttempt : 1;
 
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -59,13 +63,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void RotateTurret() override;
-	void Fire() override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void RotateTurret() override;
+	virtual void Fire() override;
 
 	void MoveTriggeredValue(const FInputActionValue& Value);
 	void MoveTriggeredInstance(const FInputActionInstance& Instance);
 	void MoveCompleted();
 
 	void Turn(const FInputActionValue& Value);
+	void Rotate(const FInputActionValue& Value);
 };
