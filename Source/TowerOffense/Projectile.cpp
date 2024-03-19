@@ -6,7 +6,6 @@ AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
-	//RootComponent = ProjectileMesh;
 
 	ProjectileMovementComponent =
 		CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
