@@ -2,6 +2,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Projectile.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -125,4 +126,10 @@ void ATurretPawn::RotateTurret()
 void ATurretPawn::Fire()
 {
 	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
+
+	GetWorld()->SpawnActor<AProjectile>(
+		ProjectileActor, ProjectileSpawnPoint->GetComponentLocation(), 
+		FRotator(ProjectileSpawnPoint->GetComponentRotation().Pitch,
+			ProjectileSpawnPoint->GetComponentRotation().Yaw + 90.f, 
+			ProjectileSpawnPoint->GetComponentRotation().Roll));
 }

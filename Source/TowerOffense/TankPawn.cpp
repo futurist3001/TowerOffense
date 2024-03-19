@@ -131,7 +131,7 @@ void ATankPawn::Tick(float DeltaTime)
 	UKismetSystemLibrary::PrintString(
 		this, TargetAngle.ToString(), true, false, FColor::Purple, DeltaTime);
 
-	DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 35, 15, FColor::Purple, false, 0.04f, 0, 0.5);
+	DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 35, 15, FColor::Purple, false, 0.03f, 0, 0.5);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

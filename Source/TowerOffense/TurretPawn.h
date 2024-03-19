@@ -4,6 +4,7 @@
 
 #include "TurretPawn.generated.h"
 
+class AProjectile;
 class UCapsuleComponent;
 struct FInputActionValue;
 
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USceneComponent> ProjectileSpawnPoint;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> ProjectileActor;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Base", meta = (GetOptions = "GetBaseMeshMaterialSlotOptions"))
@@ -53,7 +57,7 @@ protected:
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* TurretDynamicMaterialInstance;
 
-	FRotator TargetAngle; // cursor rotator
+	FRotator TargetAngle; // For rotation
 	float RotationCurrentTime;
 
 public:
