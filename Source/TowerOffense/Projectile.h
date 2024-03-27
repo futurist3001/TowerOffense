@@ -5,6 +5,7 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class USphereComponent;
 
 UCLASS()
 class TOWEROFFENSE_API AProjectile : public AActor
@@ -12,6 +13,9 @@ class TOWEROFFENSE_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USphereComponent> SphereComponent;
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
 
@@ -23,6 +27,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	//virtual void PostInitializeComponents() override;
 
 private:
 	UFUNCTION()
