@@ -29,6 +29,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileActor;
 
+	AProjectile* TurretPawnProjectile;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Base", meta = (GetOptions = "GetBaseMeshMaterialSlotOptions"))
 	FName BaseMeshMaterialSlotName;

@@ -94,7 +94,7 @@ void ATankPawn::Rotate(const FInputActionValue& Value)
 	TargetAngle.Yaw += RotateValue;
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator + 180.f, 0.f));
+	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f)); // must adapt correct angle for different player start
 }
 
 void ATankPawn::BeginPlay()
@@ -130,6 +130,16 @@ void ATankPawn::Tick(float DeltaTime)
 
 	UKismetSystemLibrary::PrintString(
 		this, TargetAngle.ToString(), true, false, FColor::Purple, DeltaTime);
+
+	GetWorld()->LineTraceSingleByChannel(
+		ShootingPoint, TurretMesh->GetComponentLocation(), 
+		TurretMesh->GetComponentLocation() + UKismetMathLibrary::GetForwardVector(
+			TurretMesh->GetComponentRotation() + FRotator(0.f, 90.f, 0.f)) * 100000.f,
+		ECollisionChannel::ECC_Camera);
+
+	DrawDebugSphere(
+		GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
+		35, 15, FColor::Red, false, 0.03f, 0, 0.5);
 
 	DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 35, 15, FColor::Purple, false, 0.03f, 0, 0.5);
 }

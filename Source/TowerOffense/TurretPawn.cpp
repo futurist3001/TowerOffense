@@ -127,9 +127,8 @@ void ATurretPawn::Fire()
 {
 	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
 
-	GetWorld()->SpawnActor<AProjectile>(
-		ProjectileActor, ProjectileSpawnPoint->GetComponentLocation(), 
-		FRotator(ProjectileSpawnPoint->GetComponentRotation().Pitch,
-			ProjectileSpawnPoint->GetComponentRotation().Yaw + 90.f, 
-			ProjectileSpawnPoint->GetComponentRotation().Roll));
+	TurretPawnProjectile = GetWorld()->SpawnActorDeferred<AProjectile>(
+		ProjectileActor, ProjectileSpawnPoint->GetComponentTransform());
+
+	TurretPawnProjectile->FinishSpawning(ProjectileSpawnPoint->GetComponentTransform());
 }
