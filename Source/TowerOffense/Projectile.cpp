@@ -24,7 +24,7 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	SphereComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-
+	
 	//UKismetSystemLibrary::PrintString(this, GetRootComponent()->GetName(), true, false, FColor::White, 2.f);
 }
 
