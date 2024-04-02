@@ -125,10 +125,17 @@ void ATurretPawn::RotateTurret()
 
 void ATurretPawn::Fire()
 {
-	UKismetSystemLibrary::PrintString(this, "Fire", true, false, FColor::Red, 2.f);
+	const FRotator TurretComponentRotation = TurretMesh->GetComponentRotation();
+	const FVector Start = ProjectileSpawnPoint->GetComponentTransform().GetLocation();
+	const FVector End = Start + (FRotator(
+		TurretComponentRotation.Pitch, TurretComponentRotation.Yaw + 90.f, TurretComponentRotation.Roll)).GetNormalized().Vector() * 500.f;
+	const FVector ShootDirection = (End - Start).GetSafeNormal();
 
-	TurretPawnProjectile = GetWorld()->SpawnActorDeferred<AProjectile>(
-		ProjectileActor, ProjectileSpawnPoint->GetComponentTransform());
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = SpawnParameters.Instigator = this;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	TurretPawnProjectile->FinishSpawning(ProjectileSpawnPoint->GetComponentTransform());
+	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
+		ProjectileActor, Start, ShootDirection.Rotation(), SpawnParameters);
+	Projectile->FireInDirection(ShootDirection);
 }

@@ -19,6 +19,11 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
+	BaseMesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	BaseMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.f, 240.f, 130.f));
+	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+
 	CurrentTime = 0.f;
 	CurrentSpeed = 0.f;
 	SpeedStopGas = 0.f;

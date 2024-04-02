@@ -13,6 +13,10 @@ ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("ShootingZone"));
 	SphereComponent->SetupAttachment(RootComponent);
 
+	BaseMesh->SetRelativeLocation(FVector(0.f, 0.f, -40.f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.f, 190.f, 250.f));
+	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+
 	TimeFire = 0.f;
 }
 

@@ -13,21 +13,25 @@ class TOWEROFFENSE_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USphereComponent> SphereComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> ProjectileMesh;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float Damage;
 
 public:	
 	AProjectile(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	void FireInDirection(const FVector& ShootDirection);
 
 protected:
 	virtual void BeginPlay() override;
-	//virtual void PostInitializeComponents() override;
 
 private:
 	UFUNCTION()
