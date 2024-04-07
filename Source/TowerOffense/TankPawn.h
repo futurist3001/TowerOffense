@@ -56,7 +56,6 @@ private:
 	float YawTurnRotator;
 	uint8 bIsStopMoving : 1;
 	uint8 bReverseAttempt : 1;
-
 	FHitResult ShootingPoint;
 
 public:

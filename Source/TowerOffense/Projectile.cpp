@@ -19,8 +19,8 @@ AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMesh->SetRelativeLocation(FVector(-30.f, 0.f, 0.f));
 	ProjectileMesh->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 
-	ProjectileMovementComponent->InitialSpeed = 2000.f;
-	ProjectileMovementComponent->MaxSpeed = 2000.f;
+	ProjectileMovementComponent->InitialSpeed = 4000.f;
+	ProjectileMovementComponent->MaxSpeed = 4000.f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.1f;

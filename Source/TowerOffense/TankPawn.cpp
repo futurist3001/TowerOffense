@@ -29,7 +29,6 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpeedStopGas = 0.f;
 	SpeedStopBraking = 0.f;
 	YawTurnRotator = 0.f;
-	YawCameraRotator = 0.f;
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
@@ -99,12 +98,14 @@ void ATankPawn::Rotate(const FInputActionValue& Value)
 	TargetAngle.Yaw += RotateValue;
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f)); // must adapt correct angle for different player start
+	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f));
 }
 
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	YawCameraRotator = GetActorRotation().Yaw;
 
 	if (const auto* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -145,8 +146,6 @@ void ATankPawn::Tick(float DeltaTime)
 	DrawDebugSphere(
 		GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
 		35, 15, FColor::Red, false, 0.03f, 0, 0.5);
-
-	DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 35, 15, FColor::Purple, false, 0.03f, 0, 0.5);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

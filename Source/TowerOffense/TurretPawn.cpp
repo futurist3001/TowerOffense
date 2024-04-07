@@ -128,7 +128,7 @@ void ATurretPawn::Fire()
 	const FRotator TurretComponentRotation = TurretMesh->GetComponentRotation();
 	const FVector Start = ProjectileSpawnPoint->GetComponentTransform().GetLocation();
 	const FVector End = Start + (FRotator(
-		TurretComponentRotation.Pitch, TurretComponentRotation.Yaw + 90.f, TurretComponentRotation.Roll)).GetNormalized().Vector() * 500.f;
+		TurretComponentRotation.Pitch, TurretComponentRotation.Yaw + 90.f, TurretComponentRotation.Roll)).GetNormalized().Vector() * 1000.f;
 	const FVector ShootDirection = (End - Start).GetSafeNormal();
 
 	FActorSpawnParameters SpawnParameters;
