@@ -6,6 +6,7 @@
 
 class AProjectile;
 class UCapsuleComponent;
+class UTOHealthComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -51,6 +52,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	float TurretRotationSpeed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	TObjectPtr<UTOHealthComponent> HealthComponent;
+
+
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 
@@ -64,6 +69,7 @@ public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual void RotateTurret();

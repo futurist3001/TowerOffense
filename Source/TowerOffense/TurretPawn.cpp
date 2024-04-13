@@ -3,6 +3,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
+#include "TOHealthComponent.h"
+#include "TOGameModeBase.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -13,6 +15,7 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Component"));
+	HealthComponent = CreateDefaultSubobject<UTOHealthComponent>(TEXT("HealthComponent"));
 
 	SetRootComponent(CapsuleComponent);
 
@@ -95,6 +98,20 @@ void ATurretPawn::SetMeshMaterial(
 		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(Material, this);
 		DynamicMaterialInstance->SetVectorParameterValue(MaterialParameterName, Color);
 		MeshComponent->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+	}
+}
+
+void ATurretPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (UMaterialInstanceDynamic* DynamicMaterial = BaseMesh->CreateDynamicMaterialInstance(0))
+	{
+		DynamicMaterial->SetVectorParameterValue(TEXT("TeamColor"), GameModeBase->GetTeamColor(ETeam::Team1));
+
+		//BaseMesh->SetMaterial(0, DynamicMaterial);
 	}
 }
 

@@ -19,10 +19,8 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
-	BaseMesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
-	BaseMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	BaseMesh->SetRelativeLocation(FVector(0.f, 0.f, -115.f));
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.f, 240.f, 130.f));
-	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 
 	CurrentTime = 0.f;
 	CurrentSpeed = 0.f;
@@ -105,6 +103,7 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BaseMesh->SetRelativeRotation(GetActorRotation());
 	YawCameraRotator = GetActorRotation().Yaw;
 
 	if (const auto* PlayerController = Cast<APlayerController>(GetController()))
@@ -143,9 +142,12 @@ void ATankPawn::Tick(float DeltaTime)
 			TurretMesh->GetComponentRotation() + FRotator(0.f, 90.f, 0.f)) * 100000.f,
 		ECollisionChannel::ECC_Camera);
 
-	DrawDebugSphere(
-		GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
-		35, 15, FColor::Red, false, 0.03f, 0, 0.5);
+	if (ShootingPoint.Location != FVector(0.f,0.f,0.f))
+	{
+		DrawDebugSphere(
+			GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
+			35, 15, FColor::Red, false, 0.03f, 0, 0.5);
+	}
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
