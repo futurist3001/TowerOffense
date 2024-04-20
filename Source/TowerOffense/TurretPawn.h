@@ -1,12 +1,13 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "TOGameModeBase.h"
+#include "TOHealthComponent.h"
 
 #include "TurretPawn.generated.h"
 
 class AProjectile;
 class UCapsuleComponent;
-class UTOHealthComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileActor;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	TObjectPtr<UTOHealthComponent> HealthComponent;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Base", meta = (GetOptions = "GetBaseMeshMaterialSlotOptions"))
 	FName BaseMeshMaterialSlotName;
@@ -49,12 +53,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	FLinearColor TurretColor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
+	ETeam Team;
+
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	float TurretRotationSpeed;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
-	TObjectPtr<UTOHealthComponent> HealthComponent;
-
 
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
@@ -67,6 +70,8 @@ protected:
 
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	void Death();
 
 protected:
 	virtual void BeginPlay() override;
@@ -96,5 +101,4 @@ private:
 	void SetMeshMaterial(
 		UStaticMeshComponent* MeshComponent, FName MeshMaterialSlotName, FName MaterialParameterName,
 		const FLinearColor& Color, UMaterialInstanceDynamic*& DynamicMaterialInstance);
-
 };

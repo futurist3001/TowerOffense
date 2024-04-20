@@ -17,10 +17,6 @@ class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-
 public:
 	ATOGameModeBase();
-
-	UFUNCTION(BlueprintCallable)
-	FColor GetTeamColor(ETeam Team);
 };

@@ -1,6 +1,10 @@
 #include "TOHealthComponent.h"
 
-UTOHealthComponent::UTOHealthComponent()
+#include "Kismet/KismetSystemLibrary.h"
+#include "TurretPawn.h"
+
+UTOHealthComponent::UTOHealthComponent(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -14,9 +18,10 @@ void UTOHealthComponent::BeginPlay()
 
 	AActor* Owner = GetOwner();
 
-	if (Owner)
+	if (IsValid(Owner))
 	{
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UTOHealthComponent::TakeDamage);
+		HealthChanged.AddDynamic(this, &UTOHealthComponent::HealthChange);
 	}
 }
 
@@ -30,6 +35,16 @@ void UTOHealthComponent::TakeDamage(
 	}
 
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
+	
+	HealthChanged.Broadcast(GetOwner(), this);
 }
 
-
+void  UTOHealthComponent::HealthChange(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	if (HealthKeeper && HealthKeeper->IsA<ATurretPawn>())
+	{
+		UKismetSystemLibrary::PrintString(
+			GetOwner(), FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
+			true, false, FColor::Green, 3.f);
+	}
+}

@@ -3,8 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
-#include "TOHealthComponent.h"
-#include "TOGameModeBase.h"
+#include "MyBlueprintFunctionLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -24,6 +23,7 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 
 	TurretRotationSpeed = 1.f;
+	Team = ETeam::Team1;
 }
 
 TArray<FName> ATurretPawn::GetBaseMeshMaterialSlotOptions() const
@@ -105,14 +105,7 @@ void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
-
-	if (UMaterialInstanceDynamic* DynamicMaterial = BaseMesh->CreateDynamicMaterialInstance(0))
-	{
-		DynamicMaterial->SetVectorParameterValue(TEXT("TeamColor"), GameModeBase->GetTeamColor(ETeam::Team1));
-
-		//BaseMesh->SetMaterial(0, DynamicMaterial);
-	}
+	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
 }
 
 void ATurretPawn::Tick(float DeltaTime)
@@ -127,11 +120,13 @@ void ATurretPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	SetMeshMaterial(BaseMesh, BaseMeshMaterialSlotName,
-		BaseMaterialParameterName, BaseColor, BaseDynamicMaterialInstance);
+	SetMeshMaterial(
+		BaseMesh, BaseMeshMaterialSlotName, BaseMaterialParameterName,
+		UMyBlueprintFunctionLibrary::GetTeamColor(Team), BaseDynamicMaterialInstance);
 
-	SetMeshMaterial(TurretMesh, TurretMeshMaterialSlotName,
-		TurretMaterialParameterName, TurretColor, TurretDynamicMaterialInstance);
+	SetMeshMaterial(
+		TurretMesh, TurretMeshMaterialSlotName, TurretMaterialParameterName,
+		UMyBlueprintFunctionLibrary::GetTeamColor(Team), TurretDynamicMaterialInstance);
 }
 
 void ATurretPawn::RotateTurret()
@@ -155,4 +150,15 @@ void ATurretPawn::Fire()
 	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileActor, Start, ShootDirection.Rotation(), SpawnParameters);
 	Projectile->FireInDirection(ShootDirection);
+}
+
+void ATurretPawn::Death()
+{
+	if (IsValid(this))
+	{
+		if (HealthComponent->Health <= 0)
+		{
+			this->Destroy();
+		}
+	}
 }

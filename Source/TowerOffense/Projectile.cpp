@@ -2,6 +2,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "TurretPawn.h"
 
 AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -46,5 +47,13 @@ void AProjectile::OnHit(
 	if (OtherActor && (OtherActor != GetOwner()) && (OtherActor != GetInstigator()))
 	{
 		this->Destroy();
+
+		OtherActor->TakeDamage(Damage, {}, nullptr, this);
+
+		if (OtherActor->IsA<ATurretPawn>())
+		{
+			ATurretPawn* TurretPawn = Cast<ATurretPawn>(OtherActor);
+			TurretPawn->Death();
+		}
 	}
 }
