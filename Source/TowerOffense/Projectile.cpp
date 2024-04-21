@@ -49,11 +49,5 @@ void AProjectile::OnHit(
 		this->Destroy();
 
 		OtherActor->TakeDamage(Damage, {}, nullptr, this);
-
-		if (OtherActor->IsA<ATurretPawn>())
-		{
-			ATurretPawn* TurretPawn = Cast<ATurretPawn>(OtherActor);
-			TurretPawn->Death();
-		}
 	}
 }

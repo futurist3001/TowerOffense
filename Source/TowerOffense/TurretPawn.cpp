@@ -113,6 +113,8 @@ void ATurretPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RotationCurrentTime = DeltaTime;
+
+	Death();
 }
 
 // using OnConstruction() leads to unpredictable results
