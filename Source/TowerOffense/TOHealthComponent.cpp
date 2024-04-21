@@ -21,7 +21,6 @@ void UTOHealthComponent::BeginPlay()
 	if (IsValid(Owner))
 	{
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UTOHealthComponent::TakeDamage);
-		HealthChanged.AddDynamic(this, &UTOHealthComponent::HealthChange);
 	}
 }
 
@@ -39,12 +38,20 @@ void UTOHealthComponent::TakeDamage(
 	HealthChanged.Broadcast(GetOwner(), this);
 }
 
-void  UTOHealthComponent::HealthChange(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+void UTOHealthComponent::Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
-	if (HealthKeeper && HealthKeeper->IsA<ATurretPawn>())
+	if (IsValid(HealthKeeper))
 	{
-		UKismetSystemLibrary::PrintString(
-			GetOwner(), FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
-			true, false, FColor::Green, 3.f);
+		if (ParameterHealthComponent->Health <= 0)
+		{
+			HealthKeeper->Destroy();
+		}
 	}
+}
+
+void UTOHealthComponent::PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	UKismetSystemLibrary::PrintString(
+		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
+		true, false, FColor::Green, 3.f);
 }

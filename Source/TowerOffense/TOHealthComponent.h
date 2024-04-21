@@ -5,8 +5,6 @@
 
 #include "TOHealthComponent.generated.h"
 
-class ATurretPawn;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
 	FHealthChanged, AActor*, HealthKeeper, UTOHealthComponent*, ParameterHealthComponent);
 
@@ -29,8 +27,11 @@ protected:
 public:	
 	UTOHealthComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable)
-	void HealthChange(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+	UFUNCTION()
+	void Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+
+	UFUNCTION()
+	void PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 	UFUNCTION()
 	void TakeDamage(

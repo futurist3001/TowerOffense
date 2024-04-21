@@ -106,6 +106,9 @@ void ATurretPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
+
+	HealthComponent->HealthChanged.AddDynamic(HealthComponent, &UTOHealthComponent::Death);
+	HealthComponent->HealthChanged.AddDynamic(HealthComponent, &UTOHealthComponent::PrintCurrentHealth);
 }
 
 void ATurretPawn::Tick(float DeltaTime)
@@ -113,8 +116,6 @@ void ATurretPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RotationCurrentTime = DeltaTime;
-
-	Death();
 }
 
 // using OnConstruction() leads to unpredictable results
@@ -152,15 +153,4 @@ void ATurretPawn::Fire()
 	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileActor, Start, ShootDirection.Rotation(), SpawnParameters);
 	Projectile->FireInDirection(ShootDirection);
-}
-
-void ATurretPawn::Death()
-{
-	if (IsValid(this))
-	{
-		if (HealthComponent->Health <= 0)
-		{
-			this->Destroy();
-		}
-	}
 }
