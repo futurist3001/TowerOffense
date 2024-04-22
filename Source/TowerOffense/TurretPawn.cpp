@@ -105,10 +105,10 @@ void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
+	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::Death);
+	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::PrintCurrentHealth);
 
-	HealthComponent->HealthChanged.AddDynamic(HealthComponent, &UTOHealthComponent::Death);
-	HealthComponent->HealthChanged.AddDynamic(HealthComponent, &UTOHealthComponent::PrintCurrentHealth);
+	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
 }
 
 void ATurretPawn::Tick(float DeltaTime)
@@ -153,4 +153,22 @@ void ATurretPawn::Fire()
 	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileActor, Start, ShootDirection.Rotation(), SpawnParameters);
 	Projectile->FireInDirection(ShootDirection);
+}
+
+void ATurretPawn::Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	if (IsValid(HealthKeeper))
+	{
+		if (ParameterHealthComponent->Health <= 0)
+		{
+			HealthKeeper->Destroy();
+		}
+	}
+}
+
+void ATurretPawn::PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	UKismetSystemLibrary::PrintString(
+		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
+		true, false, FColor::Green, 3.f);
 }

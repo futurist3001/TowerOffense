@@ -71,6 +71,12 @@ protected:
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION()
+	void Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+
+	UFUNCTION()
+	void PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

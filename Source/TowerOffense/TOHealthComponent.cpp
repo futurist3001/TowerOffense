@@ -1,8 +1,5 @@
 #include "TOHealthComponent.h"
 
-#include "Kismet/KismetSystemLibrary.h"
-#include "TurretPawn.h"
-
 UTOHealthComponent::UTOHealthComponent(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
@@ -36,22 +33,4 @@ void UTOHealthComponent::TakeDamage(
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
 	
 	HealthChanged.Broadcast(GetOwner(), this);
-}
-
-void UTOHealthComponent::Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
-{
-	if (IsValid(HealthKeeper))
-	{
-		if (ParameterHealthComponent->Health <= 0)
-		{
-			HealthKeeper->Destroy();
-		}
-	}
-}
-
-void UTOHealthComponent::PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
-{
-	UKismetSystemLibrary::PrintString(
-		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
-		true, false, FColor::Green, 3.f);
 }

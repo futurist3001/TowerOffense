@@ -46,8 +46,8 @@ void AProjectile::OnHit(
 {
 	if (OtherActor && (OtherActor != GetOwner()) && (OtherActor != GetInstigator()))
 	{
-		this->Destroy();
-
 		OtherActor->TakeDamage(Damage, {}, nullptr, this);
+
+		this->Destroy();
 	}
 }

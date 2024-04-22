@@ -28,12 +28,6 @@ public:
 	UTOHealthComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION()
-	void Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
-
-	UFUNCTION()
-	void PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
-
-	UFUNCTION()
 	void TakeDamage(
 		AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 		AController* InstigatedBy, AActor* DamageCauser);
