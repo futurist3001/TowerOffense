@@ -20,7 +20,7 @@ protected:
 	TArray<AActor*> OverlapedActor;
 
 private:
-	float TimeFire;
+	FTimerHandle FireTimerHandle;
 
 public:
 	ATowerPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -30,6 +30,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void RotateTurret() override;
 	virtual void Fire() override;
+	bool IsLookToTank();
 
 private:
 	UFUNCTION()

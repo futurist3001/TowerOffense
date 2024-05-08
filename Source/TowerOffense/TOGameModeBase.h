@@ -17,6 +17,18 @@ class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+private:
+	TArray<AActor*> FoundTowers;
+	TArray<AActor*> FoundTanks;
+
+	uint8 bOneIteration : 1;
+
 public:
 	ATOGameModeBase();
+
+	void Win();
+	void Lose();
+
+private:
+	virtual void Tick(float DeltaTime) override;
 };

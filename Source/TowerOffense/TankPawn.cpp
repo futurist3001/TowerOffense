@@ -78,6 +78,11 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 
 void ATankPawn::Fire()
 {
+	Start = ProjectileSpawnPoint->GetComponentLocation();
+	End = Start + (FRotator(
+		TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Yaw + 90.f,
+		TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
+
 	Super::Fire();
 }
 

@@ -67,12 +67,14 @@ protected:
 
 	FRotator TargetAngle; // For rotation
 	float RotationCurrentTime;
+	FVector Start; // For fire start point
+	FVector End; // For fire end point
 
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION()
-	void Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+	void HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 	UFUNCTION()
 	void PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);

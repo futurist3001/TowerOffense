@@ -105,7 +105,7 @@ void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::Death);
+	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::HealthCheckedDeath);
 	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::PrintCurrentHealth);
 
 	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
@@ -140,10 +140,6 @@ void ATurretPawn::RotateTurret()
 
 void ATurretPawn::Fire()
 {
-	const FRotator TurretComponentRotation = TurretMesh->GetComponentRotation();
-	const FVector Start = ProjectileSpawnPoint->GetComponentTransform().GetLocation();
-	const FVector End = Start + (FRotator(
-		TurretComponentRotation.Pitch, TurretComponentRotation.Yaw + 90.f, TurretComponentRotation.Roll)).GetNormalized().Vector() * 1000.f;
 	const FVector ShootDirection = (End - Start).GetSafeNormal();
 
 	FActorSpawnParameters SpawnParameters;
@@ -155,7 +151,7 @@ void ATurretPawn::Fire()
 	Projectile->FireInDirection(ShootDirection);
 }
 
-void ATurretPawn::Death(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
 	if (IsValid(HealthKeeper))
 	{
