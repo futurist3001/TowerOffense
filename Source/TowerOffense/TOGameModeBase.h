@@ -22,12 +22,19 @@ private:
 	TArray<AActor*> FoundTanks;
 
 	uint8 bOneIteration : 1;
+	FString WinLoseState;
 
 public:
 	ATOGameModeBase();
 
-	void Win();
-	void Lose();
+	UFUNCTION(BlueprintCallable)
+	FString Win();
+
+	UFUNCTION(BlueprintCallable)
+	FString Lose();
+
+	UFUNCTION(BlueprintCallable)
+	const FString GetWinLoseState() const;
 
 private:
 	virtual void Tick(float DeltaTime) override;

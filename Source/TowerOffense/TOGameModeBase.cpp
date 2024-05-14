@@ -11,16 +11,29 @@ ATOGameModeBase::ATOGameModeBase()
 	bOneIteration = false;
 }
 
-void ATOGameModeBase::Win()
+FString ATOGameModeBase::Win()
 {
+	WinLoseState = "Win";
+
 	UKismetSystemLibrary::PrintString(
-		GetWorld(), "Win", true, false, FColor::Green, 5.f);
+		GetWorld(), WinLoseState, true, false, FColor::Green, 5.f);
+
+	return WinLoseState;
 }
 
-void ATOGameModeBase::Lose()
+FString ATOGameModeBase::Lose()
 {
+	WinLoseState = "Lose";
+
 	UKismetSystemLibrary::PrintString(
-		GetWorld(), "Lose", true, false, FColor::Red, 5.f);
+		GetWorld(), WinLoseState, true, false, FColor::Red, 5.f);
+
+	return WinLoseState;
+}
+
+const FString ATOGameModeBase::GetWinLoseState() const
+{
+	return WinLoseState;
 }
 
 void ATOGameModeBase::Tick(float DeltaTime)
