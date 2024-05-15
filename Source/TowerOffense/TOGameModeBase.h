@@ -27,11 +27,8 @@ private:
 public:
 	ATOGameModeBase();
 
-	UFUNCTION(BlueprintCallable)
-	FString Win();
-
-	UFUNCTION(BlueprintCallable)
-	FString Lose();
+	void Win();
+	void Lose();
 
 	UFUNCTION(BlueprintCallable)
 	const FString GetWinLoseState() const;

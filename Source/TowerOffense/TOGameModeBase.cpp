@@ -11,24 +11,20 @@ ATOGameModeBase::ATOGameModeBase()
 	bOneIteration = false;
 }
 
-FString ATOGameModeBase::Win()
+void ATOGameModeBase::Win()
 {
 	WinLoseState = "Win";
 
 	UKismetSystemLibrary::PrintString(
 		GetWorld(), WinLoseState, true, false, FColor::Green, 5.f);
-
-	return WinLoseState;
 }
 
-FString ATOGameModeBase::Lose()
+void ATOGameModeBase::Lose()
 {
 	WinLoseState = "Lose";
 
 	UKismetSystemLibrary::PrintString(
 		GetWorld(), WinLoseState, true, false, FColor::Red, 5.f);
-
-	return WinLoseState;
 }
 
 const FString ATOGameModeBase::GetWinLoseState() const
