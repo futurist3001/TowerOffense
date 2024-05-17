@@ -28,8 +28,9 @@ class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EEndGameState EndGameState;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEndGame OnEndGame;
 	
 private:
 	UPROPERTY(Transient)
@@ -44,13 +45,9 @@ private:
 	int32 NumberTowers;
 	int32 NumberTanks;
 	FTimerHandle TimerPlayData;
-	FOnEndGame OnEndGame;
 
 public:
 	ATOGameModeBase();
-
-	UFUNCTION()
-	void HandleEndGameState(EEndGameState ParameterEndGameState);
 
 protected:
 	void TankDestroyed(AActor* DestroyedActor);

@@ -31,27 +31,6 @@ void ATOGameModeBase::Lose()
 	OnEndGame.Broadcast(EEndGameState::Lose);
 }
 
-void ATOGameModeBase::HandleEndGameState(EEndGameState ParameterEndGameState)
-{
-	switch (ParameterEndGameState)
-	{
-		case EEndGameState::Lose:
-		{
-			EndGameState = EEndGameState::Lose;
-		}
-
-		case EEndGameState::Win:
-		{
-			EndGameState = EEndGameState::Win;
-		}
-
-		default:
-			EndGameState = EEndGameState::Win;
-
-		break;
-	}
-}
-
 void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 {
 	if (NumberTanks > 0)
@@ -102,8 +81,6 @@ void ATOGameModeBase::InitPlayData()
 void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OnEndGame.AddDynamic(this, &ATOGameModeBase::HandleEndGameState);
 
 	GetWorldTimerManager().SetTimer(TimerPlayData, this, &ATOGameModeBase::InitPlayData, 2.f, true);
 }
