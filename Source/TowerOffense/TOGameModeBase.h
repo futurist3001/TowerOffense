@@ -26,6 +26,10 @@ UCLASS()
 class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EEndGameState EndGameState;
 	
 private:
 	UPROPERTY(Transient)
@@ -45,8 +49,8 @@ private:
 public:
 	ATOGameModeBase();
 
-	//UFUNCTION(BlueprintCallable)
-	//const FString GetWinLoseState() const;
+	UFUNCTION()
+	void HandleEndGameState(EEndGameState ParameterEndGameState);
 
 protected:
 	void TankDestroyed(AActor* DestroyedActor);

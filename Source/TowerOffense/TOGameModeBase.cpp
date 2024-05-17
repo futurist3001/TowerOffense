@@ -18,7 +18,7 @@ void ATOGameModeBase::Win()
 	//UKismetSystemLibrary::PrintString(
 		//GetWorld(), WinLoseState, true, false, FColor::Green, 5.f);
 
-	OnEndPlay.Broadcast(EEndGameState::Win);
+	OnEndGame.Broadcast(EEndGameState::Win);
 }
 
 void ATOGameModeBase::Lose()
@@ -28,13 +28,29 @@ void ATOGameModeBase::Lose()
 	//UKismetSystemLibrary::PrintString(
 		//GetWorld(), WinLoseState, true, false, FColor::Red, 5.f);
 
-	OnEndPlay.Broadcast(EEndGameState::Lose);
+	OnEndGame.Broadcast(EEndGameState::Lose);
 }
 
-/*const FString ATOGameModeBase::GetWinLoseState() const
+void ATOGameModeBase::HandleEndGameState(EEndGameState ParameterEndGameState)
 {
-	//return WinLoseState;
-}*/
+	switch (ParameterEndGameState)
+	{
+		case EEndGameState::Lose:
+		{
+			EndGameState = EEndGameState::Lose;
+		}
+
+		case EEndGameState::Win:
+		{
+			EndGameState = EEndGameState::Win;
+		}
+
+		default:
+			EndGameState = EEndGameState::Win;
+
+		break;
+	}
+}
 
 void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 {
@@ -86,6 +102,8 @@ void ATOGameModeBase::InitPlayData()
 void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnEndGame.AddDynamic(this, &ATOGameModeBase::HandleEndGameState);
 
 	GetWorldTimerManager().SetTimer(TimerPlayData, this, &ATOGameModeBase::InitPlayData, 2.f, true);
 }
