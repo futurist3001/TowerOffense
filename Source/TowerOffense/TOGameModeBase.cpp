@@ -7,27 +7,15 @@
 ATOGameModeBase::ATOGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	//bOneIteration = false;
 }
 
 void ATOGameModeBase::Win()
 {
-	//WinLoseState = "Win";
-
-	//UKismetSystemLibrary::PrintString(
-		//GetWorld(), WinLoseState, true, false, FColor::Green, 5.f);
-
 	OnEndGame.Broadcast(EEndGameState::Win);
 }
 
 void ATOGameModeBase::Lose()
 {
-	//WinLoseState = "Lose";
-
-	//UKismetSystemLibrary::PrintString(
-		//GetWorld(), WinLoseState, true, false, FColor::Red, 5.f);
-
 	OnEndGame.Broadcast(EEndGameState::Lose);
 }
 
@@ -37,7 +25,7 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 	{
 		--NumberTanks;
 	}
-	else
+	else if (NumberTanks <= 0)
 	{
 		Lose();
 	}
@@ -45,11 +33,13 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 {
-	if (NumberTowers > 0)
+  	if (NumberTowers > 0)
 	{
 		--NumberTowers;
+
+		//UKismetSystemLibrary::PrintString(this, "Destroyed Tower", true, false, FColor::Black, 1.f);
 	}
-	else
+	else if(NumberTowers <= 0)
 	{
 		Win();
 	}
@@ -88,22 +78,4 @@ void ATOGameModeBase::BeginPlay()
 void ATOGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), ATowerPawn::StaticClass(), FoundTowers);
-
-	if (FoundTowers.Num() == 0 && !bOneIteration)
-	{
-		Win();
-		bOneIteration = true;
-	}
-
-	UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), ATankPawn::StaticClass(), FoundTanks);
-
-	if (FoundTanks.Num() == 0 && !bOneIteration)
-	{
-		Lose();
-		bOneIteration = true;
-	}*/
 }

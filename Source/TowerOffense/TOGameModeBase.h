@@ -39,9 +39,6 @@ private:
 	UPROPERTY(Transient)
 	TArray<AActor*> FoundTanks;
 
-	//uint8 bOneIteration : 1;
-	//FString WinLoseState;
-
 	int32 NumberTowers;
 	int32 NumberTanks;
 	FTimerHandle TimerPlayData;
@@ -50,8 +47,12 @@ public:
 	ATOGameModeBase();
 
 protected:
+	UFUNCTION()
 	void TankDestroyed(AActor* DestroyedActor);
+
+	UFUNCTION()
 	void TowerDestroyed(AActor* DestroyedActor);
+
 	void InitPlayData();
 
 	void Win();
