@@ -25,7 +25,8 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 	{
 		--NumberTanks;
 	}
-	else if (NumberTanks <= 0)
+
+	if (NumberTanks <= 0)
 	{
 		Lose();
 	}
@@ -33,15 +34,16 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 {
-  	if (NumberTowers > 0)
+    if (NumberTowers > 0)
 	{
 		--NumberTowers;
 
 		//UKismetSystemLibrary::PrintString(this, "Destroyed Tower", true, false, FColor::Black, 1.f);
 	}
-	else if(NumberTowers <= 0)
+
+	if (NumberTowers <= 0)
 	{
-		Win();
+ 		Win();
 	}
 }
 
@@ -72,7 +74,8 @@ void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimer(TimerPlayData, this, &ATOGameModeBase::InitPlayData, 2.f, true);
+	//GetWorldTimerManager().SetTimer(TimerPlayData, this, &ATOGameModeBase::InitPlayData, 2.f, true);
+	InitPlayData();
 }
 
 void ATOGameModeBase::Tick(float DeltaTime)
