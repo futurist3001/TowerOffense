@@ -4,9 +4,13 @@
 #include "TankPawn.h"
 #include "Kismet/GameplayStatics.h"
 
-ATOGameModeBase::ATOGameModeBase()
+ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	NumberTowers = 0;
+	NumberTanks = 0;
 }
 
 void ATOGameModeBase::Win()
@@ -21,12 +25,10 @@ void ATOGameModeBase::Lose()
 
 void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 {
-	if (NumberTanks > 0)
-	{
-		--NumberTanks;
-	}
+	
+	--NumberTanks;
 
-	if (NumberTanks <= 0)
+	if (NumberTanks < 1)
 	{
 		Lose();
 	}
@@ -34,14 +36,9 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 {
-    if (NumberTowers > 0)
-	{
-		--NumberTowers;
+	--NumberTowers;
 
-		//UKismetSystemLibrary::PrintString(this, "Destroyed Tower", true, false, FColor::Black, 1.f);
-	}
-
-	if (NumberTowers <= 0)
+	if (NumberTowers < 1)
 	{
  		Win();
 	}
@@ -49,36 +46,25 @@ void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::InitPlayData()
 {
-	UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), ATowerPawn::StaticClass(), FoundTowers);
-
-	NumberTowers = FoundTowers.Num();
-
-	for (const auto& FoundTower : FoundTowers)
+	const auto Init = [this](UClass* Class, int32& Count, void (ThisClass::* Method)(AActor*), FName MethodName)
 	{
-		FoundTower->OnDestroyed.AddDynamic(this, &ATOGameModeBase::TowerDestroyed);
-	}
+		TArray<AActor*> Actors;
+		UGameplayStatics::GetAllActorsOfClass(this, Class, Actors);
+		Count = Actors.Num();
 
-	UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), ATankPawn::StaticClass(), FoundTanks);
+		for (AActor* Actor : Actors)
+		{
+			Actor->OnDestroyed.__Internal_AddDynamic(this, Method, MethodName);
+		}
+	};
 
-	NumberTanks = FoundTanks.Num();
-
-	for (const auto& FoundTank : FoundTanks)
-	{
-		FoundTank->OnDestroyed.AddDynamic(this, &ATOGameModeBase::TankDestroyed);
-	}
+	Init(ATowerPawn::StaticClass(), NumberTowers, &ATOGameModeBase::TowerDestroyed, TEXT("TowerDestroyed"));
+	Init(ATankPawn::StaticClass(), NumberTanks, &ATOGameModeBase::TankDestroyed, TEXT("TankDestroyed"));
 }
 
 void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//GetWorldTimerManager().SetTimer(TimerPlayData, this, &ATOGameModeBase::InitPlayData, 2.f, true);
 	InitPlayData();
-}
-
-void ATOGameModeBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
