@@ -37,6 +37,12 @@ private:
 public:
 	ATOGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION()
+	void Restart();
+
+	UFUNCTION()
+	void Quit();
+
 protected:
 	virtual void BeginPlay() override;
 

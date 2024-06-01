@@ -3,6 +3,7 @@
 #include "TowerPawn.h"
 #include "TankPawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -67,4 +68,17 @@ void ATOGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	InitPlayData();
+}
+
+void ATOGameModeBase::Restart()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("TOMap"), true);
+
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+}
+
+void ATOGameModeBase::Quit()
+{
+	UKismetSystemLibrary::QuitGame(
+		GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
 }
