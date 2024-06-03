@@ -14,4 +14,6 @@ public:
 	ATOPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	void SetPlayerEnabledState(bool SetPlayerEnabled);
+
+	void LimitPlayerMovement();
 };

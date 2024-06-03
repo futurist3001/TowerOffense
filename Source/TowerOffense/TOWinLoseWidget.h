@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
 #include "TOWinLoseWidget.generated.h"
 
 class UTextBlock;
@@ -27,6 +28,4 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
-
-
 };
