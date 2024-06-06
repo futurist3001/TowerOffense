@@ -38,6 +38,5 @@ void ATOPlayerController::BeginPlay()
 	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	auto BindingCreateWLW{ [this, GameMode]() {GameMode->OnEndGame.AddDynamic(this, &ATOPlayerController::CreateWinLoseWidget); } };
-	UKismetSystemLibrary::K2_SetTimerForNextTick(GetWorld(), "BindingCreateWLW");
-	BindingCreateWLW();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(BindingCreateWLW);
 }
