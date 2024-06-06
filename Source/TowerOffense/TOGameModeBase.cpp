@@ -4,6 +4,7 @@
 #include "TankPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "TOPlayerController.h"
 
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -68,17 +69,19 @@ void ATOGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	InitPlayData();
+
+	auto* Controller = GetWorld()->GetFirstPlayerController<ATOPlayerController>();
+	OnEndGame.AddDynamic(Controller, &ATOPlayerController::LimitPlayerMovement);
 }
 
 void ATOGameModeBase::Restart()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName("TOMap"), true);
-
-	UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 }
 
 void ATOGameModeBase::Quit()
 {
 	UKismetSystemLibrary::QuitGame(
-		GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+		GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }

@@ -13,11 +13,8 @@ void UTOWinLoseWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ATOGameModeBase* TOGameModeBase = Cast<ATOGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	ATOPlayerController* TOPlayerController = Cast<ATOPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 
-	RestartButton->OnClicked.AddDynamic(TOGameModeBase, &ATOGameModeBase::Restart);
-	QuitButton->OnClicked.AddDynamic(TOGameModeBase, &ATOGameModeBase::Quit);
-
-	TOPlayerController->LimitPlayerMovement();
+	RestartButton->OnClicked.AddDynamic(GameMode, &ATOGameModeBase::Restart);
+	QuitButton->OnClicked.AddDynamic(GameMode, &ATOGameModeBase::Quit);
 }

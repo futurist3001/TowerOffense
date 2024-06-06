@@ -1,5 +1,6 @@
 #include "TOPlayerController.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "TOWinLoseWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 ATOPlayerController::ATOPlayerController(const FObjectInitializer& ObjectInitializer)
@@ -9,21 +10,34 @@ ATOPlayerController::ATOPlayerController(const FObjectInitializer& ObjectInitial
 
 void ATOPlayerController::SetPlayerEnabledState(bool SetPlayerEnabled)
 {
-	if (SetPlayerEnabled)
+	if (APawn* ValidPawn = GetPawn())
 	{
-		GetPawn()->EnableInput(this);
-	}
-	else
-	{
-		GetPawn()->DisableInput(this);
+		SetPlayerEnabled ? ValidPawn->EnableInput(this) : ValidPawn->DisableInput(this);
 	}
 
 	bShowMouseCursor = SetPlayerEnabled;
 }
 
-void ATOPlayerController::LimitPlayerMovement()
+void ATOPlayerController::LimitPlayerMovement(EEndGameState)
 {
-	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(this);
 
 	bShowMouseCursor = true;
+}
+
+void ATOPlayerController::CreateWinLoseWidget(EEndGameState)
+{
+	auto* WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
+	WinLoseWidget->AddToViewport();
+	WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+void ATOPlayerController::BeginPlay()
+{
+	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	auto BindingCreateWLW{ [this, GameMode]() {GameMode->OnEndGame.AddDynamic(this, &ATOPlayerController::CreateWinLoseWidget); } };
+	UKismetSystemLibrary::K2_SetTimerForNextTick(GetWorld(), "BindingCreateWLW");
+	BindingCreateWLW();
 }
