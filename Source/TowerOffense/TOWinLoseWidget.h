@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "TOGameModeBase.h"
 
 #include "TOWinLoseWidget.generated.h"
 
@@ -19,7 +20,7 @@ protected:
 	TObjectPtr<UOverlay> TextOverlay;
 
 	UPROPERTY(meta = ( BindWidget ))
-	TObjectPtr<UTextBlock> EndGameState;
+	TObjectPtr<UTextBlock> EndGameStateText;
 
 	UPROPERTY(meta = ( BindWidget ))
 	TObjectPtr<UButton> RestartButton;
@@ -29,6 +30,8 @@ protected:
 
 public:
 	UTOWinLoseWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	void SetEndGameStateTextColor(EEndGameState EndGameState);
 
 protected:
 	virtual void NativeConstruct() override;

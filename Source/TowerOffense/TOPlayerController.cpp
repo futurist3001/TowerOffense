@@ -1,21 +1,13 @@
 #include "TOPlayerController.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "TOWinLoseWidget.h"
+#include "TOScopeWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 ATOPlayerController::ATOPlayerController(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)
 {
-}
-
-void ATOPlayerController::SetPlayerEnabledState(bool SetPlayerEnabled)
-{
-	if (APawn* ValidPawn = GetPawn())
-	{
-		SetPlayerEnabled ? ValidPawn->EnableInput(this) : ValidPawn->DisableInput(this);
-	}
-
-	bShowMouseCursor = SetPlayerEnabled;
+	FlipFlopState = 0;
 }
 
 void ATOPlayerController::LimitPlayerMovement(EEndGameState)
@@ -27,7 +19,10 @@ void ATOPlayerController::LimitPlayerMovement(EEndGameState)
 
 void ATOPlayerController::CreateWinLoseWidget(EEndGameState)
 {
-	auto* WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
+	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
+	WinLoseWidget->SetEndGameStateTextColor(GameMode->RealEndGameState);
 	WinLoseWidget->AddToViewport();
 	WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
@@ -35,8 +30,37 @@ void ATOPlayerController::CreateWinLoseWidget(EEndGameState)
 
 void ATOPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
+
 	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 
-	auto BindingCreateWLW{ [this, GameMode]() {GameMode->OnEndGame.AddDynamic(this, &ATOPlayerController::CreateWinLoseWidget); } };
-	GetWorld()->GetTimerManager().SetTimerForNextTick(BindingCreateWLW);
+	GameMode->OnEndGame.AddDynamic(this, &ThisClass::LimitPlayerMovement);
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this, GameMode]
+	{
+		GameMode->OnEndGame.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
+	});
+
+	CreateScopeWidget();
+}
+
+void ATOPlayerController::CreateScopeWidget()
+{
+	ScopeWidget = CreateWidget<UTOScopeWidget>(this, ScopeWidgetClass);
+	ScopeWidget->AddToViewport();
+	ScopeWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ATOPlayerController::SwitchScopeVisibility()
+{
+	if (FlipFlopState % 2 == 0)
+	{
+		ScopeWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		ScopeWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	++FlipFlopState;
 }

@@ -29,13 +29,22 @@ class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEndGame OnEndGame;
+
+	EEndGameState RealEndGameState;
 	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName MapName;
+
 private:
 	int32 NumberTowers;
 	int32 NumberTanks;
 
 public:
 	ATOGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION()
+	void SetRealEndGameState(EEndGameState EndGameState) { RealEndGameState = EndGameState; }
 
 	UFUNCTION()
 	void Restart();

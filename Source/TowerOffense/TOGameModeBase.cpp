@@ -13,6 +13,7 @@ ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 
 	NumberTowers = 0;
 	NumberTanks = 0;
+	MapName = "TOMap";
 }
 
 void ATOGameModeBase::Win()
@@ -27,10 +28,7 @@ void ATOGameModeBase::Lose()
 
 void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 {
-	
-	--NumberTanks;
-
-	if (NumberTanks < 1)
+	if (--NumberTanks < 1)
 	{
 		Lose();
 	}
@@ -38,9 +36,7 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 {
-	--NumberTowers;
-
-	if (NumberTowers < 1)
+	if (--NumberTowers < 1)
 	{
  		Win();
 	}
@@ -48,20 +44,20 @@ void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::InitPlayData()
 {
-	const auto Init = [this](UClass* Class, int32& Count, void (ThisClass::* Method)(AActor*), FName MethodName)
-	{
-		TArray<AActor*> Actors;
-		UGameplayStatics::GetAllActorsOfClass(this, Class, Actors);
-		Count = Actors.Num();
+#define INIT_PLAY_DATA(Class, Count, Method)                        \
+	do {                                                            \
+		TArray<AActor*> Actors;                                     \
+		UGameplayStatics::GetAllActorsOfClass(this, Class, Actors); \
+		Count = Actors.Num();                                       \
+		for (AActor* Actor : Actors)                                \
+		{                                                           \
+			Actor->OnDestroyed.AddDynamic(this, Method);            \
+		}                                                           \
+	} while (0)
 
-		for (AActor* Actor : Actors)
-		{
-			Actor->OnDestroyed.__Internal_AddDynamic(this, Method, MethodName);
-		}
-	};
-
-	Init(ATowerPawn::StaticClass(), NumberTowers, &ATOGameModeBase::TowerDestroyed, TEXT("TowerDestroyed"));
-	Init(ATankPawn::StaticClass(), NumberTanks, &ATOGameModeBase::TankDestroyed, TEXT("TankDestroyed"));
+	INIT_PLAY_DATA(ATowerPawn::StaticClass(), NumberTowers, &ATOGameModeBase::TowerDestroyed);
+	INIT_PLAY_DATA(ATankPawn::StaticClass(), NumberTanks, &ATOGameModeBase::TankDestroyed);
+#undef INIT_PLAY_DATA
 }
 
 void ATOGameModeBase::BeginPlay()
@@ -70,13 +66,12 @@ void ATOGameModeBase::BeginPlay()
 
 	InitPlayData();
 
-	auto* Controller = GetWorld()->GetFirstPlayerController<ATOPlayerController>();
-	OnEndGame.AddDynamic(Controller, &ATOPlayerController::LimitPlayerMovement);
+	OnEndGame.AddDynamic(this, &ATOGameModeBase::SetRealEndGameState);
 }
 
 void ATOGameModeBase::Restart()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName("TOMap"), true);
+	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 }
 

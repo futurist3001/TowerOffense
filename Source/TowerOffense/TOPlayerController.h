@@ -7,15 +7,28 @@
 #include "TOPlayerController.generated.h"
 
 class UTOWinLoseWidget;
+class UTOScopeWidget;
 
 UCLASS()
 class TOWEROFFENSE_API ATOPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+private:
+	uint32 FlipFlopState;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UTOWinLoseWidget> WinLoseWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UTOScopeWidget> ScopeWidgetClass;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UTOWinLoseWidget> WinLoseWidget;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UTOScopeWidget> ScopeWidget;
 
 public:
 	ATOPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -30,4 +43,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	void CreateScopeWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchScopeVisibility();
 };
