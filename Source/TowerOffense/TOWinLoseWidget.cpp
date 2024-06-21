@@ -1,31 +1,18 @@
 #include "TOWinLoseWidget.h"
+
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "Kismet/GameplayStatics.h"
-#include "TOPlayerController.h"
 #include "TOGameModeBase.h"
 
-UTOWinLoseWidget::UTOWinLoseWidget(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
-{
-}
-
-void UTOWinLoseWidget::SetEndGameStateTextColor(EEndGameState EndGameState)
+void UTOWinLoseWidget::SetEndGameStateTextColor(EGamePhase EndGameState)
 {
 	if (EndGameStateText)
 	{
-		auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
- 		FString RealEndGameStateString = UEnum::GetDisplayValueAsText(GameMode->RealEndGameState).ToString();
+ 		const FString RealEndGameStateString = UEnum::GetDisplayValueAsText(EndGameState).ToString();
 		EndGameStateText->SetText(FText::FromString(RealEndGameStateString));
 
-		if (GameMode->RealEndGameState == EEndGameState::Win)
-		{
-			EndGameStateText->SetColorAndOpacity(FSlateColor(FColor::Green));
-		}
-		else
-		{
-			EndGameStateText->SetColorAndOpacity(FSlateColor(FColor::Red));
-		}
+		const FColor Color = EndGameState == EGamePhase::Win ? FColor::Green : FColor::Red;
+		EndGameStateText->SetColorAndOpacity(FSlateColor(Color));
 	}
 }
 

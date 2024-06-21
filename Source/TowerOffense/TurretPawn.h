@@ -73,6 +73,11 @@ protected:
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	FORCEINLINE ETeam GetTeam() const
+	{
+		return Team;
+	}
+
 	UFUNCTION()
 	void HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 

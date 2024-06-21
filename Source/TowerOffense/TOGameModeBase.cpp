@@ -1,10 +1,9 @@
 #include "TOGameModeBase.h"
-#include "EngineUtils.h"
-#include "TowerPawn.h"
-#include "TankPawn.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "TOPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "TankPawn.h"
+#include "TowerPawn.h"
 
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -13,33 +12,29 @@ ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 
 	NumberTowers = 0;
 	NumberTanks = 0;
-	MapName = "TOMap";
 }
 
-void ATOGameModeBase::Win()
+void ATOGameModeBase::Restart()
 {
-	OnEndGame.Broadcast(EEndGameState::Win);
+	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
+
+	GamePhase = EGamePhase::Playing; // ?????????????????????
 }
 
-void ATOGameModeBase::Lose()
+void ATOGameModeBase::Quit()
 {
-	OnEndGame.Broadcast(EEndGameState::Lose);
+	UKismetSystemLibrary::QuitGame(
+		GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
 
-void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
+void ATOGameModeBase::BeginPlay()
 {
-	if (--NumberTanks < 1)
-	{
-		Lose();
-	}
-}
+	Super::BeginPlay();
 
-void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
-{
-	if (--NumberTowers < 1)
-	{
- 		Win();
-	}
+	GamePhase = EGamePhase::Playing; // ??????????????????
+
+	InitPlayData();
 }
 
 void ATOGameModeBase::InitPlayData()
@@ -60,23 +55,34 @@ void ATOGameModeBase::InitPlayData()
 #undef INIT_PLAY_DATA
 }
 
-void ATOGameModeBase::BeginPlay()
+void ATOGameModeBase::Win()
 {
-	Super::BeginPlay();
-
-	InitPlayData();
-
-	OnEndGame.AddDynamic(this, &ATOGameModeBase::SetRealEndGameState);
+	SetEndGameState(EGamePhase::Win);
 }
 
-void ATOGameModeBase::Restart()
+void ATOGameModeBase::Lose()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
-	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
+	SetEndGameState(EGamePhase::Lose);
 }
 
-void ATOGameModeBase::Quit()
+void ATOGameModeBase::SetEndGameState(EGamePhase State)
 {
-	UKismetSystemLibrary::QuitGame(
-		GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	GamePhase = State;
+	OnGamePhaseChanged.Broadcast(GamePhase);
+}
+
+void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
+{
+	if (--NumberTanks < 1 && GamePhase == EGamePhase::Playing)
+	{
+		Lose();
+	}
+}
+
+void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
+{
+	if (--NumberTowers < 1 && GamePhase == EGamePhase::Playing)
+	{
+ 		Win();
+	}
 }

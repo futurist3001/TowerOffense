@@ -31,6 +31,7 @@ protected:
 	virtual void RotateTurret() override;
 	virtual void Fire() override;
 	bool IsLookToTank();
+	bool IsTheSameTeam(AActor* Actor);
 
 private:
 	UFUNCTION()

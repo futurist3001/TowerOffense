@@ -13,13 +13,12 @@ enum class ETeam : uint8
 };
 
 UENUM(BlueprintType)
-enum class EEndGameState : uint8
+enum class EGamePhase : uint8
 {
+	Playing,
 	Win,
 	Lose
 };
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndGame, EEndGameState, DelEndGameState);
 
 UCLASS()
 class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
@@ -27,14 +26,16 @@ class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase, DelEndGameState);
 	UPROPERTY(BlueprintAssignable)
-	FOnEndGame OnEndGame;
-
-	EEndGameState RealEndGameState;
+	FOnGamePhaseChanged OnGamePhaseChanged;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MapName;
+
+	UPROPERTY(BlueprintReadOnly)
+	EGamePhase GamePhase;
 
 private:
 	int32 NumberTowers;
@@ -43,8 +44,10 @@ private:
 public:
 	ATOGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION()
-	void SetRealEndGameState(EEndGameState EndGameState) { RealEndGameState = EndGameState; }
+	FORCEINLINE EGamePhase GetGamePhase() const
+	{
+		return GamePhase;
+	}
 
 	UFUNCTION()
 	void Restart();
@@ -58,6 +61,8 @@ protected:
 	void InitPlayData();
 	void Win();
 	void Lose();
+
+	void SetEndGameState(EGamePhase State);
 
 private:
 	UFUNCTION()

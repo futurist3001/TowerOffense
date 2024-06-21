@@ -19,7 +19,4 @@ protected:
 
 	UPROPERTY(meta = ( BindWidget ))
 	TObjectPtr<UImage> Image;
-
-public:
-	UTOScopeWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };

@@ -45,8 +45,18 @@ void AProjectile::OnHit(
 	UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*, FVector, const FHitResult&)
 {
 	if (OtherActor && (OtherActor != GetOwner()) && (OtherActor != GetInstigator()))
-	{
-		OtherActor->TakeDamage(Damage, {}, nullptr, this);
+	{                                                                                             
+		if (GetInstigator()->IsA<ATurretPawn>() && OtherActor->IsA<ATurretPawn>())
+		{
+			const ATurretPawn* TransmitterTurretPawn = Cast<ATurretPawn>(GetInstigator());
+			const ATurretPawn* ReceiverTurretPawn = Cast<ATurretPawn>(OtherActor);
+
+			if (TransmitterTurretPawn->GetTeam() != ReceiverTurretPawn->GetTeam())
+			{
+				OtherActor->TakeDamage(Damage, {}, nullptr, this);
+			}
+
+		}
 
 		this->Destroy();
 	}

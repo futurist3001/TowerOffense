@@ -14,9 +14,6 @@ class TOWEROFFENSE_API ATOPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
-private:
-	uint32 FlipFlopState;
-
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UTOWinLoseWidget> WinLoseWidgetClass;
@@ -31,21 +28,18 @@ protected:
 	TObjectPtr<UTOScopeWidget> ScopeWidget;
 
 public:
-	ATOPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
-	void SetPlayerEnabledState(bool SetPlayerEnabled);
-
-	UFUNCTION()
-	void LimitPlayerMovement(EEndGameState EndGameState); // here parameter only for binding OnEndGame
-
-	UFUNCTION()
-	void CreateWinLoseWidget(EEndGameState EndGameState); // here parameter only for binding OnEndGame
+	UFUNCTION(BlueprintCallable)
+	void SwitchScopeVisibility();
 
 protected:
 	virtual void BeginPlay() override;
 
 	void CreateScopeWidget();
 
-	UFUNCTION(BlueprintCallable)
-	void SwitchScopeVisibility();
+private:
+	UFUNCTION()
+	void LimitPlayerMovement(EGamePhase EndGameState); // here parameter only for binding OnEndGame
+
+	UFUNCTION()
+	void CreateWinLoseWidget(EGamePhase EndGameState); // here parameter only for binding OnEndGame
 };

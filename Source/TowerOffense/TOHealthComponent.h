@@ -22,8 +22,6 @@ public:
 
 	FHealthChanged HealthChanged;
 
-protected:
-
 public:	
 	UTOHealthComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

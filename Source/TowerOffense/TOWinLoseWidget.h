@@ -6,9 +6,9 @@
 
 #include "TOWinLoseWidget.generated.h"
 
-class UTextBlock;
 class UButton;
 class UOverlay;
+class UTextBlock;
 
 UCLASS()
 class TOWEROFFENSE_API UTOWinLoseWidget : public UUserWidget
@@ -16,22 +16,20 @@ class TOWEROFFENSE_API UTOWinLoseWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(meta = ( BindWidget ))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> TextOverlay;
 
-	UPROPERTY(meta = ( BindWidget ))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> EndGameStateText;
 
-	UPROPERTY(meta = ( BindWidget ))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> RestartButton;
 
-	UPROPERTY(meta = ( BindWidget ))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> QuitButton;
 
 public:
-	UTOWinLoseWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
-	void SetEndGameStateTextColor(EEndGameState EndGameState);
+	void SetEndGameStateTextColor(EGamePhase EndGameState);
 
 protected:
 	virtual void NativeConstruct() override;

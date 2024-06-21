@@ -45,17 +45,20 @@ void ATowerPawn::Tick(float DeltaTime)
 
 void ATowerPawn::RotateTurret()
 {
-	Super::RotateTurret();
+	if (!IsTheSameTeam(OverlapedActor[0]))
+	{
+		Super::RotateTurret();
 
-	const FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(
-		GetActorLocation(), OverlapedActor[0]->GetActorLocation());
+		const FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(
+			GetActorLocation(), OverlapedActor[0]->GetActorLocation());
 
-	TargetAngle = FRotator(0.f, NewRotator.Yaw - 90.f, 0.f);
+		TargetAngle = FRotator(0.f, NewRotator.Yaw - 90.f, 0.f);
+	}
 }
 
 void ATowerPawn::Fire()
 {
-	if (IsLookToTank())
+	if (IsLookToTank() && !IsTheSameTeam(OverlapedActor[0]))
 	{
 		Start = ProjectileSpawnPoint->GetComponentLocation();
 		End = OverlapedActor[0]->GetActorLocation();
@@ -82,16 +85,34 @@ bool ATowerPawn::IsLookToTank()
 	return false;
 }
 
+bool ATowerPawn::IsTheSameTeam(AActor* Actor)
+{
+	if (Actor->IsA<ATurretPawn>())
+	{
+		const ATurretPawn* TurretPawn = Cast<ATurretPawn>(Actor);
+
+		if (this->GetTeam() == TurretPawn->GetTeam())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void ATowerPawn::OnBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent*, int32, bool, const FHitResult&)
 {
-	if (OtherActor && OtherActor->IsA<ATankPawn>())
+	if (!IsTheSameTeam(OtherActor))
 	{
-		UKismetSystemLibrary::PrintString(this, "Overlap", true, false, FColor::Black, 5.f);
+		if (OtherActor && OtherActor->IsA<ATankPawn>())
+		{
+			UKismetSystemLibrary::PrintString(this, "Overlap", true, false, FColor::Black, 5.f);
 
-		OverlapedActor.Add(OtherActor);
+			OverlapedActor.Add(OtherActor);
 
-		GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ATowerPawn::Fire, 2.f, true);
+			GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ATowerPawn::Fire, 2.f, true);
+		}
 	}
 }
 
@@ -99,15 +120,18 @@ void ATowerPawn::OnEndOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (OtherActor && OtherActor->IsA<ATankPawn>())
+	if (!IsTheSameTeam(OtherActor))
 	{
-		UKismetSystemLibrary::PrintString(this, "EndOverlap", true, false, FColor::Purple, 5.f);
-
-		OverlapedActor.RemoveSingleSwap(OtherActor); // if the actor leave shooting zone, overlapped actor must be deleted from array
-
-		if (OverlapedActor.IsEmpty())
+		if (OtherActor && OtherActor->IsA<ATankPawn>())
 		{
-			GetWorldTimerManager().ClearTimer(FireTimerHandle);
+			UKismetSystemLibrary::PrintString(this, "EndOverlap", true, false, FColor::Purple, 5.f);
+
+			OverlapedActor.RemoveSingleSwap(OtherActor); // if the actor leave shooting zone, overlapped actor must be deleted from array
+
+			if (OverlapedActor.IsEmpty())
+			{
+				GetWorldTimerManager().ClearTimer(FireTimerHandle);
+			}
 		}
 	}
 }

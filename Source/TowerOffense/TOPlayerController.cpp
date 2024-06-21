@@ -1,47 +1,26 @@
 #include "TOPlayerController.h"
+
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "TOWinLoseWidget.h"
-#include "TOScopeWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "TOScopeWidget.h"
+#include "TOWinLoseWidget.h"
 
-ATOPlayerController::ATOPlayerController(const FObjectInitializer& ObjectInitializer)
-:Super(ObjectInitializer)
+void ATOPlayerController::SwitchScopeVisibility()
 {
-	FlipFlopState = 0;
-}
-
-void ATOPlayerController::LimitPlayerMovement(EEndGameState)
-{
-	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(this);
-
-	bShowMouseCursor = true;
-}
-
-void ATOPlayerController::CreateWinLoseWidget(EEndGameState)
-{
-	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
-
-	WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
-	WinLoseWidget->SetEndGameStateTextColor(GameMode->RealEndGameState);
-	WinLoseWidget->AddToViewport();
-	WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	const ESlateVisibility Visibility = ScopeWidget->GetVisibility() != ESlateVisibility::Visible
+		? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+	ScopeWidget->SetVisibility(Visibility);
 }
 
 void ATOPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
-
-	GameMode->OnEndGame.AddDynamic(this, &ThisClass::LimitPlayerMovement);
-
-	GetWorld()->GetTimerManager().SetTimerForNextTick([this, GameMode]
-	{
-		GameMode->OnEndGame.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
-	});
-
 	CreateScopeWidget();
+
+	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
+	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
+	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
 }
 
 void ATOPlayerController::CreateScopeWidget()
@@ -51,16 +30,18 @@ void ATOPlayerController::CreateScopeWidget()
 	ScopeWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
-void ATOPlayerController::SwitchScopeVisibility()
+void ATOPlayerController::LimitPlayerMovement(EGamePhase)
 {
-	if (FlipFlopState % 2 == 0)
-	{
-		ScopeWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		ScopeWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
+	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(this);
 
-	++FlipFlopState;
+	bShowMouseCursor = true;
+}
+
+void ATOPlayerController::CreateWinLoseWidget(EGamePhase EndGameState)
+{
+	WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
+	WinLoseWidget->SetEndGameStateTextColor(EndGameState);
+	WinLoseWidget->AddToViewport();
+	WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
