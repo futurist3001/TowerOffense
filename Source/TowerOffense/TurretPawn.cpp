@@ -118,7 +118,7 @@ void ATurretPawn::Tick(float DeltaTime)
 	RotationCurrentTime = DeltaTime;
 }
 
-// using OnConstruction() leads to unpredictable results
+// using OnConstruction(const FTransform &Transform) leads to unpredictable results
 void ATurretPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

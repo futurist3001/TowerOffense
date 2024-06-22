@@ -23,5 +23,5 @@ void UTOWinLoseWidget::NativeConstruct()
 	auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 
 	RestartButton->OnClicked.AddDynamic(GameMode, &ATOGameModeBase::Restart);
-	QuitButton->OnClicked.AddDynamic(GameMode, &ATOGameModeBase::Quit);
+	QuitButton->OnClicked.AddDynamic(GameMode, &ATOGameModeBase::ReturnToMainMenu); // may be think about returning to the main menu
 }

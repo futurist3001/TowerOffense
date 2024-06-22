@@ -19,20 +19,20 @@ void ATOGameModeBase::Restart()
 	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 
-	GamePhase = EGamePhase::Playing; // ?????????????????????
+	GamePhase = EGamePhase::Playing;
 }
 
-void ATOGameModeBase::Quit()
+void ATOGameModeBase::ReturnToMainMenu()
 {
-	UKismetSystemLibrary::QuitGame(
-		GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+	UGameplayStatics::OpenLevel(GetWorld(), MainMenuMapName, true);
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 }
 
 void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GamePhase = EGamePhase::Playing; // ??????????????????
+	GamePhase = EGamePhase::Playing;
 
 	InitPlayData();
 }
@@ -81,7 +81,7 @@ void ATOGameModeBase::TankDestroyed(AActor* DestroyedActor)
 
 void ATOGameModeBase::TowerDestroyed(AActor* DestroyedActor)
 {
-	if (--NumberTowers < 1 && GamePhase == EGamePhase::Playing)
+ 	if (--NumberTowers < 1 && GamePhase == EGamePhase::Playing)
 	{
  		Win();
 	}

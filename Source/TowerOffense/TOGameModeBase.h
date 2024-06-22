@@ -15,6 +15,7 @@ enum class ETeam : uint8
 UENUM(BlueprintType)
 enum class EGamePhase : uint8
 {
+	Preparation,
 	Playing,
 	Win,
 	Lose
@@ -34,6 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MapName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName MainMenuMapName;
+
 	UPROPERTY(BlueprintReadOnly)
 	EGamePhase GamePhase;
 
@@ -49,11 +53,16 @@ public:
 		return GamePhase;
 	}
 
+	FORCEINLINE void SetGamePhase(EGamePhase Phase)
+	{
+		GamePhase = Phase;
+	}
+
 	UFUNCTION()
 	void Restart();
 
 	UFUNCTION()
-	void Quit();
+	void ReturnToMainMenu();
 
 protected:
 	virtual void BeginPlay() override;
