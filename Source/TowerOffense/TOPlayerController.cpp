@@ -2,6 +2,7 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "TOPreparationWidget.h"
 #include "TOScopeWidget.h"
 #include "TOWinLoseWidget.h"
 
@@ -17,10 +18,29 @@ void ATOPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	CreateScopeWidget();
+	CreatePreparationWidget();
 
 	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
+}
+
+void ATOPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (PreparationWidget)
+	{
+		PreparationWidget->SetPreparationText();
+	}
+
+	if (auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>())
+	{
+		if (GameMode->HandleTime < 5.f && GameMode->HandleTime > 4.f)
+		{
+			DestroyPreparationWidget();
+		}
+	}
 }
 
 void ATOPlayerController::CreateScopeWidget()
@@ -28,6 +48,31 @@ void ATOPlayerController::CreateScopeWidget()
 	ScopeWidget = CreateWidget<UTOScopeWidget>(this, ScopeWidgetClass);
 	ScopeWidget->AddToViewport();
 	ScopeWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ATOPlayerController::CreatePreparationWidget()
+{
+	UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(this);
+
+	PreparationWidget = CreateWidget<UTOPreparationWidget>(this, PreparationWidgetClass);
+	PreparationWidget->AddToViewport();
+	PreparationWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ATOPlayerController::DestroyPreparationWidget()
+{
+	if (PreparationWidget)
+	{
+		auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
+
+		if (GameMode->HandleTime > 4.f && PreparationWidget)
+		{
+			UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
+
+			PreparationWidget->RemoveFromViewport();
+			PreparationWidget = nullptr;
+		}
+	}
 }
 
 void ATOPlayerController::LimitPlayerMovement(EGamePhase)

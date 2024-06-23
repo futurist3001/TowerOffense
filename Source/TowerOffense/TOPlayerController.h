@@ -6,8 +6,9 @@
 
 #include "TOPlayerController.generated.h"
 
-class UTOWinLoseWidget;
+class UTOPreparationWidget;
 class UTOScopeWidget;
+class UTOWinLoseWidget;
 
 UCLASS()
 class TOWEROFFENSE_API ATOPlayerController : public APlayerController
@@ -21,11 +22,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UTOScopeWidget> ScopeWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UTOPreparationWidget> PreparationWidgetClass;
+
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOWinLoseWidget> WinLoseWidget;
 
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOScopeWidget> ScopeWidget;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UTOPreparationWidget> PreparationWidget;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -33,8 +40,12 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	void CreateScopeWidget();
+
+	void CreatePreparationWidget();
+	void DestroyPreparationWidget();
 
 private:
 	UFUNCTION()

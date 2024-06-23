@@ -8,7 +8,7 @@
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	NumberTowers = 0;
 	NumberTanks = 0;
@@ -28,13 +28,49 @@ void ATOGameModeBase::ReturnToMainMenu()
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 }
 
+FText ATOGameModeBase::GetPreparationText()
+{
+	if (HandleTime < 1.f)
+	{
+		return FText::FromString(TEXT("3"));
+	}
+
+	else if (HandleTime >= 1.f && HandleTime < 2.f)
+	{
+		return FText::FromString(TEXT("2"));
+	}
+
+	else if (HandleTime >= 2.f && HandleTime < 3.f)
+	{
+		return FText::FromString(TEXT("1"));
+	}
+
+	else if (HandleTime > 3.f)
+	{
+		GamePhase = EGamePhase::Playing;
+
+		return FText::FromString(TEXT("Play!"));
+	}
+
+	return FText();
+}
+
 void ATOGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GamePhase = EGamePhase::Playing;
+	GamePhase = EGamePhase::Preparation;
 
 	InitPlayData();
+}
+
+void ATOGameModeBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	HandleTime += DeltaTime;
+
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::SanitizeFloat(HandleTime), true, false, FColor::Purple, 1.f);
 }
 
 void ATOGameModeBase::InitPlayData()

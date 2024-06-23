@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "TeamMemberInterface.h"
 
 #include "TOGameModeBase.generated.h"
 
@@ -22,7 +23,7 @@ enum class EGamePhase : uint8
 };
 
 UCLASS()
-class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
+class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase, public ITeamMemberInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,8 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGamePhaseChanged, EGamePhase, DelEndGameState);
 	UPROPERTY(BlueprintAssignable)
 	FOnGamePhaseChanged OnGamePhaseChanged;
+
+	float HandleTime; // For delay preparation
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -64,8 +67,11 @@ public:
 	UFUNCTION()
 	void ReturnToMainMenu();
 
+	FText GetPreparationText(); // where this better locate?
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	void InitPlayData();
 	void Win();
