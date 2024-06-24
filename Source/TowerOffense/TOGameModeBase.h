@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "TeamMemberInterface.h"
 
 #include "TOGameModeBase.generated.h"
 
@@ -23,7 +22,7 @@ enum class EGamePhase : uint8
 };
 
 UCLASS()
-class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase, public ITeamMemberInterface
+class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 

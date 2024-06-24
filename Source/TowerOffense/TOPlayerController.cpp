@@ -20,6 +20,8 @@ void ATOPlayerController::BeginPlay()
 	CreateScopeWidget();
 	CreatePreparationWidget();
 
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATOPlayerController::DestroyPreparationWidget, 4.f, false);
+
 	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
@@ -32,14 +34,6 @@ void ATOPlayerController::Tick(float DeltaTime)
 	if (PreparationWidget)
 	{
 		PreparationWidget->SetPreparationText();
-	}
-
-	if (auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>())
-	{
-		if (GameMode->HandleTime < 5.f && GameMode->HandleTime > 4.f)
-		{
-			DestroyPreparationWidget();
-		}
 	}
 }
 
@@ -65,7 +59,7 @@ void ATOPlayerController::DestroyPreparationWidget()
 	{
 		auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 
-		if (GameMode->HandleTime > 4.f && PreparationWidget)
+		if (PreparationWidget && GameMode->GetGamePhase() == EGamePhase::Playing)
 		{
 			UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
 

@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOPreparationWidget> PreparationWidget;
 
+private:
+	FTimerHandle TimerHandle;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SwitchScopeVisibility();

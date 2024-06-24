@@ -91,7 +91,7 @@ bool ATowerPawn::IsTheSameTeam(AActor* Actor)
 	{
 		const ATurretPawn* TurretPawn = Cast<ATurretPawn>(Actor);
 
-		if (this->GetTeam() == TurretPawn->GetTeam())
+		if (Execute_GetTeam(this) == Execute_GetTeam(TurretPawn))
 		{
 			return true;
 		}

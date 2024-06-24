@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "TeamMemberInterface.h"
 #include "TOGameModeBase.h"
 #include "TOHealthComponent.h"
 
@@ -11,7 +12,7 @@ class UCapsuleComponent;
 struct FInputActionValue;
 
 UCLASS()
-class TOWEROFFENSE_API ATurretPawn : public APawn
+class TOWEROFFENSE_API ATurretPawn : public APawn, public ITeamMemberInterface
 {
 	GENERATED_BODY()
 
@@ -73,7 +74,7 @@ protected:
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	FORCEINLINE ETeam GetTeam() const
+	FORCEINLINE ETeam GetTeam_Implementation() const
 	{
 		return Team;
 	}

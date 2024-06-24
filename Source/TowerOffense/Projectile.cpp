@@ -2,6 +2,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "TeamMemberInterface.h"
 #include "TurretPawn.h"
 
 AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
@@ -51,7 +52,7 @@ void AProjectile::OnHit(
 			const ATurretPawn* TransmitterTurretPawn = Cast<ATurretPawn>(GetInstigator());
 			const ATurretPawn* ReceiverTurretPawn = Cast<ATurretPawn>(OtherActor);
 
-			if (TransmitterTurretPawn->GetTeam() != ReceiverTurretPawn->GetTeam())
+			if (TransmitterTurretPawn->Execute_GetTeam(TransmitterTurretPawn) != ReceiverTurretPawn->Execute_GetTeam(ReceiverTurretPawn))
 			{
 				OtherActor->TakeDamage(Damage, {}, nullptr, this);
 			}

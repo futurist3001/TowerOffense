@@ -69,8 +69,6 @@ void ATOGameModeBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	HandleTime += DeltaTime;
-
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::SanitizeFloat(HandleTime), true, false, FColor::Purple, 1.f);
 }
 
 void ATOGameModeBase::InitPlayData()
