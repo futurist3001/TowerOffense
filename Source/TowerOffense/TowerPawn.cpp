@@ -30,11 +30,6 @@ void ATowerPawn::Tick(float DeltaTime)
 	if (!OverlapedActor.IsEmpty())
 	{
 		RotateTurret();
-
-		UKismetSystemLibrary::PrintString(this, TargetAngle.ToString(), true, false, FColor::Black, DeltaTime);
-
-		UKismetSystemLibrary::PrintString(
-			this, OverlapedActor[0]->GetActorLocation().ToString(), true, false, FColor::Turquoise, DeltaTime);
 	}
 
 	DrawDebugLine(
@@ -107,8 +102,6 @@ void ATowerPawn::OnBeginOverlap(
 	{
 		if (OtherActor && OtherActor->IsA<ATankPawn>())
 		{
-			UKismetSystemLibrary::PrintString(this, "Overlap", true, false, FColor::Black, 5.f);
-
 			OverlapedActor.Add(OtherActor);
 
 			GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ATowerPawn::Fire, 2.f, true);
@@ -124,8 +117,6 @@ void ATowerPawn::OnEndOverlap(
 	{
 		if (OtherActor && OtherActor->IsA<ATankPawn>())
 		{
-			UKismetSystemLibrary::PrintString(this, "EndOverlap", true, false, FColor::Purple, 5.f);
-
 			OverlapedActor.RemoveSingleSwap(OtherActor); // if the actor leave shooting zone, overlapped actor must be deleted from array
 
 			if (OverlapedActor.IsEmpty())

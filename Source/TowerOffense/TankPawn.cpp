@@ -31,8 +31,6 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 
 void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 {
-	UKismetSystemLibrary::PrintString(this, "MoveTriggered", true, false, FColor::Blue, 5.f);
-
 	MovementVector = Value.Get<FVector>();
 
 	if (!bReverseAttempt)
@@ -67,8 +65,6 @@ void ATankPawn::MoveCompleted()
 
 void ATankPawn::Turn(const FInputActionValue& Value)
 {
-	UKismetSystemLibrary::PrintString(this, "Turn", true, false, FColor::Green, 5.f);
-
 	YawTurnRotator = Value.Get<float>();
 	AddActorLocalRotation(FRotator(0.f, YawTurnRotator, 0.f), true, nullptr);
 
@@ -134,9 +130,6 @@ void ATankPawn::Tick(float DeltaTime)
 	}
 
 	RotateTurret();
-
-	UKismetSystemLibrary::PrintString(
-		this, TargetAngle.ToString(), true, false, FColor::Purple, DeltaTime);
 
 	GetWorld()->LineTraceSingleByChannel(
 		ShootingPoint, TurretMesh->GetComponentLocation(), 
