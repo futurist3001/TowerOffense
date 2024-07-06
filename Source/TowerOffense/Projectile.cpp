@@ -2,6 +2,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "TeamMemberInterface.h"
 #include "TurretPawn.h"
 
@@ -28,6 +29,8 @@ AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovementComponent->ProjectileGravityScale = 0.1f;
 
 	Damage = 10;
+
+	DamageEffect = nullptr;
 }
 
 void AProjectile::FireInDirection(const FVector& ShootDirection)
@@ -43,7 +46,7 @@ void AProjectile::BeginPlay()
 }
 
 void AProjectile::OnHit(
-	UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*, FVector, const FHitResult&)
+	UPrimitiveComponent*, AActor* OtherActor, UPrimitiveComponent*, FVector, const FHitResult& HitResult)
 {
 	if (OtherActor && (OtherActor != GetOwner()) && (OtherActor != GetInstigator()))
 	{                                                                                             
@@ -57,6 +60,11 @@ void AProjectile::OnHit(
 				OtherActor->TakeDamage(Damage, {}, nullptr, this);
 			}
 
+		}
+
+		if (DamageEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamageEffect, HitResult.Location);
 		}
 
 		this->Destroy();

@@ -1,6 +1,7 @@
 #include "TurretPawn.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
 #include "MyBlueprintFunctionLibrary.h"
@@ -24,6 +25,8 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 
 	TurretRotationSpeed = 1.f;
 	Team = ETeam::Team1;
+	DeathEfect = nullptr;
+	FireEfect = nullptr;
 }
 
 TArray<FName> ATurretPawn::GetBaseMeshMaterialSlotOptions() const
@@ -149,14 +152,24 @@ void ATurretPawn::Fire()
 	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileActor, Start, ShootDirection.Rotation(), SpawnParameters);
 	Projectile->FireInDirection(ShootDirection);
+
+	if (FireEfect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEfect, ProjectileSpawnPoint->GetComponentLocation());
+	}
 }
 
 void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
-	if (IsValid(HealthKeeper))
+    if (IsValid(HealthKeeper))
 	{
 		if (ParameterHealthComponent->Health <= 0)
 		{
+			if (DeathEfect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEfect, GetActorLocation());
+			}
+
 			HealthKeeper->Destroy();
 		}
 	}

@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "NiagaraFunctionLibrary.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -16,8 +17,19 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
+
+	RightTankTrack = CreateDefaultSubobject<USceneComponent>(TEXT("Right Tank Track"));
+	LeftTankTrack = CreateDefaultSubobject<USceneComponent>(TEXT("Left Tank Track"));
+	RightTankTrackRotation = CreateDefaultSubobject<USceneComponent>(TEXT("Right Tank Track Rotation"));
+	LeftTankTrackRotation = CreateDefaultSubobject<USceneComponent>(TEXT("Left Tank Track Rotation"));
+
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	RightTankTrack->SetupAttachment(BaseMesh);
+	LeftTankTrack->SetupAttachment(BaseMesh);
+	RightTankTrackRotation->SetupAttachment(BaseMesh);
+	LeftTankTrackRotation->SetupAttachment(BaseMesh);
 
 	CurrentTime = 0.f;
 	CurrentSpeed = 0.f;
@@ -27,6 +39,8 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
+
+	MovementEffect = nullptr;
 }
 
 void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
@@ -40,6 +54,14 @@ void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 			SpeedStopBraking *= -1;
 		}
 		bReverseAttempt = true;
+	}
+
+	if (MovementEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), MovementEffect, RightTankTrack->GetComponentLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), MovementEffect, LeftTankTrack->GetComponentLocation());
 	}
 }
 
@@ -70,6 +92,14 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 
 	TurretMesh->AddLocalRotation(FRotator(0.f, -YawTurnRotator, 0.f), false, nullptr);
 	TargetAngle.Yaw -= YawTurnRotator;
+
+	if (MovementEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), MovementEffect, RightTankTrackRotation->GetComponentLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), MovementEffect, LeftTankTrackRotation->GetComponentLocation());
+	}
 }
 
 void ATankPawn::Fire()

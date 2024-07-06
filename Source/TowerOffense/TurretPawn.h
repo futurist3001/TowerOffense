@@ -9,6 +9,7 @@
 
 class AProjectile;
 class UCapsuleComponent;
+class UParticleSystem;
 struct FInputActionValue;
 
 UCLASS()
@@ -34,6 +35,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	TObjectPtr<UTOHealthComponent> HealthComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TObjectPtr<UParticleSystem> DeathEfect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TObjectPtr<UParticleSystem> FireEfect;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Base", meta = (GetOptions = "GetBaseMeshMaterialSlotOptions"))

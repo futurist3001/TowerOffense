@@ -78,9 +78,12 @@ void ATOPlayerController::LimitPlayerMovement(EGamePhase)
 
 void ATOPlayerController::CreateWinLoseWidget(EGamePhase EndGameState)
 {
-	WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
-	WinLoseWidget->SetEndGameStateTextColor(EndGameState);
-	WinLoseWidget->AddToViewport();
-	WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	if (GetWorld() && !GetWorld()->bIsTearingDown)
+	{
+		WinLoseWidget = CreateWidget<UTOWinLoseWidget>(this, WinLoseWidgetClass);
+		WinLoseWidget->SetEndGameStateTextColor(EndGameState);
+		WinLoseWidget->AddToViewport();
+		WinLoseWidget->SetVisibility(ESlateVisibility::Visible);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }

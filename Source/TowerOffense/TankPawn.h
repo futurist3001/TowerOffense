@@ -7,6 +7,7 @@
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UNiagaraSystem;
 class USpringArmComponent;
 struct FHitResult;
 struct FInputActionValue;
@@ -44,6 +45,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float Speed;
+
+	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	TObjectPtr<USceneComponent> RightTankTrack;
+
+	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	TObjectPtr<USceneComponent> LeftTankTrack;
+
+	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	TObjectPtr<USceneComponent> LeftTankTrackRotation;
+
+	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	TObjectPtr<USceneComponent> RightTankTrackRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TObjectPtr<UNiagaraSystem> MovementEffect;
 
 private:
 	FVector MovementVector;

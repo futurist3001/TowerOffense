@@ -20,6 +20,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	float Health;
 
+	UPROPERTY(BlueprintAssignable)
 	FHealthChanged HealthChanged;
 
 public:	

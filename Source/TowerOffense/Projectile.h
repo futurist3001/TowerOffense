@@ -22,12 +22,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TObjectPtr<UParticleSystem> DamageEffect;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float Damage;
 
 public:	
 	AProjectile(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	FORCEINLINE float GetDamage() const
+	{
+		return Damage;
+	}
+
 	void FireInDirection(const FVector& ShootDirection);
 
 protected:
