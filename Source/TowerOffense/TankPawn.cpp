@@ -131,7 +131,7 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BaseMesh->SetRelativeRotation(GetActorRotation());
+	BaseMesh->SetWorldRotation(GetActorRotation() - FRotator(0.f, 90.f, 0.f));
 	YawCameraRotator = GetActorRotation().Yaw;
 
 	if (const auto* PlayerController = Cast<APlayerController>(GetController()))
