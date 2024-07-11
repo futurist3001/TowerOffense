@@ -1,11 +1,13 @@
 #include "TankPawn.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraFunctionLibrary.h"
@@ -39,15 +41,25 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
+	bPlayedTurretRotationSoundIteration = false;
 
 	MovementEffect = nullptr;
+}
+
+void ATankPawn::MoveStarted()
+{
+	if (MovementSound)
+	{
+		MovementAudioComponent = UGameplayStatics::CreateSound2D(GetWorld(), MovementSound);
+		MovementAudioComponent->Play();
+	}
 }
 
 void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 {
 	MovementVector = Value.Get<FVector>();
 
-	if (!bReverseAttempt)
+	if (!bReverseAttempt) // this will release once
 	{
 		if (MovementVector == PreviousMovementVector)
 		{
@@ -83,6 +95,12 @@ void ATankPawn::MoveCompleted()
 	bReverseAttempt = false;
 
 	PreviousMovementVector = MovementVector;
+
+	if (MovementSound && MovementAudioComponent)
+	{
+		MovementAudioComponent->Stop();
+		MovementAudioComponent->DestroyComponent();
+	}
 }
 
 void ATankPawn::Turn(const FInputActionValue& Value)
@@ -161,6 +179,32 @@ void ATankPawn::Tick(float DeltaTime)
 
 	RotateTurret();
 
+	if (!bPlayedTurretRotationSoundIteration && bIsRotate)
+	{
+		// Play Sound
+
+		if (TurretRotationSound)
+		{
+			TurretRotationAudioComponent = UGameplayStatics::CreateSound2D(GetWorld(), TurretRotationSound);
+			TurretRotationAudioComponent->Play();
+
+			bPlayedTurretRotationSoundIteration = true;
+		}
+	}
+
+	else if (bPlayedTurretRotationSoundIteration && !bIsRotate)
+	{
+		// Stop and delete sound
+
+		if (TurretRotationSound && TurretRotationAudioComponent)
+		{
+			TurretRotationAudioComponent->Stop();
+			TurretRotationAudioComponent->DestroyComponent();
+
+			bPlayedTurretRotationSoundIteration = false;
+		}
+	}
+
 	GetWorld()->LineTraceSingleByChannel(
 		ShootingPoint, TurretMesh->GetComponentLocation(), 
 		TurretMesh->GetComponentLocation() + UKismetMathLibrary::GetForwardVector(
@@ -181,6 +225,7 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Started, this, &ATankPawn::MoveStarted);
 		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ATankPawn::MoveTriggeredValue);
 		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ATankPawn::MoveTriggeredInstance);
 		EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Completed, this, &ATankPawn::MoveCompleted);

@@ -8,8 +8,10 @@
 #include "TurretPawn.generated.h"
 
 class AProjectile;
+class UAudioComponent;
 class UCapsuleComponent;
 class UParticleSystem;
+class USoundBase;
 struct FInputActionValue;
 
 UCLASS()
@@ -67,16 +69,27 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	float TurretRotationSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> ShootSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> DeathSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> TurretRotationSound;
+
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* TurretDynamicMaterialInstance;
 
+	uint8 bIsRotate : 1;
 	FRotator TargetAngle; // For rotation
 	float RotationCurrentTime;
 	FVector Start; // For fire start point
 	FVector End; // For fire end point
+	UAudioComponent* TurretRotationAudioComponent;
 
 public:
 	ATurretPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -29,8 +29,8 @@ AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovementComponent->ProjectileGravityScale = 0.1f;
 
 	Damage = 10;
-
 	DamageEffect = nullptr;
+	ExplosionSound = nullptr;
 }
 
 void AProjectile::FireInDirection(const FVector& ShootDirection)
@@ -65,6 +65,11 @@ void AProjectile::OnHit(
 		if (DamageEffect)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DamageEffect, HitResult.Location);
+		}
+
+		if (ExplosionSound)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
 		}
 
 		this->Destroy();

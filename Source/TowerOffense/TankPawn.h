@@ -4,10 +4,12 @@
 
 #include "TankPawn.generated.h"
 
+class UAudioComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class UNiagaraSystem;
+class USoundBase;
 class USpringArmComponent;
 struct FHitResult;
 struct FInputActionValue;
@@ -61,6 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	TObjectPtr<UNiagaraSystem> MovementEffect;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> MovementSound;
+
 private:
 	FVector MovementVector;
 	FVector PreviousMovementVector; // previous pressed button
@@ -72,7 +77,10 @@ private:
 	float YawTurnRotator;
 	uint8 bIsStopMoving : 1;
 	uint8 bReverseAttempt : 1;
+	uint8 bPlayedTurretRotationSoundIteration : 1;
 	FHitResult ShootingPoint;
+	UAudioComponent* MovementAudioComponent;
+	
 
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -84,6 +92,7 @@ protected:
 	virtual void RotateTurret() override;
 	virtual void Fire() override;
 
+	void MoveStarted();
 	void MoveTriggeredValue(const FInputActionValue& Value);
 	void MoveTriggeredInstance(const FInputActionInstance& Instance);
 	void MoveCompleted();

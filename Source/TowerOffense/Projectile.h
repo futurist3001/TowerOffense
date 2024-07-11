@@ -5,6 +5,7 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class USoundBase;
 class USphereComponent;
 
 UCLASS()
@@ -28,6 +29,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> ExplosionSound;
 
 public:	
 	AProjectile(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -20,3 +20,13 @@ void ATOMMGameModeBase::QuitGame()
 	UKismetSystemLibrary::QuitGame(
 		GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
+
+void ATOMMGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (MMBackSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), MMBackSound);
+	}
+}

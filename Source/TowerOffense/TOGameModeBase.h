@@ -21,6 +21,8 @@ enum class EGamePhase : uint8
 	Lose
 };
 
+class USoundBase;
+
 UCLASS()
 class TOWEROFFENSE_API ATOGameModeBase : public AGameModeBase
 {
@@ -42,6 +44,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	EGamePhase GamePhase;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> GameBackMusic;
 
 private:
 	int32 NumberTowers;

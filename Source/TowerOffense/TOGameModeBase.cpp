@@ -62,6 +62,11 @@ void ATOGameModeBase::BeginPlay()
 	GamePhase = EGamePhase::Preparation;
 
 	InitPlayData();
+
+	if (GameBackMusic)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), GameBackMusic);
+	}
 }
 
 void ATOGameModeBase::Tick(float DeltaTime)

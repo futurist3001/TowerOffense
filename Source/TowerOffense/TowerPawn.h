@@ -21,6 +21,7 @@ protected:
 
 private:
 	FTimerHandle FireTimerHandle;
+	uint8 bPlayedTurretRotationSoundIteration : 1;
 
 public:
 	ATowerPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

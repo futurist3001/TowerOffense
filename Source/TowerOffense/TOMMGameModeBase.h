@@ -5,6 +5,8 @@
 
 #include "TOMMGameModeBase.generated.h"
 
+class USoundBase;
+
 UCLASS()
 class TOWEROFFENSE_API ATOMMGameModeBase : public AGameModeBase
 {
@@ -14,6 +16,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MapName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> MMBackSound;
+
 public:
 	ATOMMGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -22,4 +27,7 @@ public:
 
 	UFUNCTION()
 	void QuitGame();
+
+protected:
+	virtual void BeginPlay() override;
 };

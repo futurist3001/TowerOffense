@@ -1,7 +1,9 @@
 #include "TowerPawn.h"
 
 #include "TankPawn.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Projectile.h"
@@ -30,6 +32,32 @@ void ATowerPawn::Tick(float DeltaTime)
 	if (!OverlapedActor.IsEmpty())
 	{
 		RotateTurret();
+	}
+
+	if (!bPlayedTurretRotationSoundIteration && bIsRotate)
+	{
+		// Play Sound
+
+		if (TurretRotationSound)
+		{
+			TurretRotationAudioComponent = UGameplayStatics::CreateSound2D(GetWorld(), TurretRotationSound);
+			TurretRotationAudioComponent->Play();
+
+			bPlayedTurretRotationSoundIteration = true;
+		}
+	}
+
+	else if (bPlayedTurretRotationSoundIteration && !bIsRotate)
+	{
+		// Stop and delete sound
+
+		if (TurretRotationSound && TurretRotationAudioComponent)
+		{
+			TurretRotationAudioComponent->Stop();
+			TurretRotationAudioComponent->DestroyComponent();
+
+			bPlayedTurretRotationSoundIteration = false;
+		}
 	}
 
 	DrawDebugLine(
@@ -122,6 +150,12 @@ void ATowerPawn::OnEndOverlap(
 			if (OverlapedActor.IsEmpty())
 			{
 				GetWorldTimerManager().ClearTimer(FireTimerHandle);
+			}
+
+			if (TurretRotationSound && TurretRotationAudioComponent) // if the turret did not have time to aim
+			{
+				TurretRotationAudioComponent->Stop();
+				TurretRotationAudioComponent->DestroyComponent();
 			}
 		}
 	}

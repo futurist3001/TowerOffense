@@ -23,6 +23,7 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	TurretMesh->SetupAttachment(BaseMesh);
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 
+	bIsRotate = false;
 	TurretRotationSpeed = 1.f;
 	Team = ETeam::Team1;
 	DeathEfect = nullptr;
@@ -139,6 +140,28 @@ void ATurretPawn::RotateTurret()
 {
 	TurretMesh->SetRelativeRotation(
 		FMath::RInterpTo(TurretMesh->GetRelativeRotation(), TargetAngle, RotationCurrentTime, TurretRotationSpeed));
+
+	float LimitTargetAngleYaw = FMath::Fmod(TargetAngle.Yaw, 360.f);
+
+	if (LimitTargetAngleYaw > 180.f) // For limit: from -180.f to 180.f 
+	{
+		LimitTargetAngleYaw -= 360.f;
+	}
+
+	else if (LimitTargetAngleYaw < -180.f) // For limit: from -180.f to 180.f
+	{
+		LimitTargetAngleYaw += 360.f;
+	}
+
+	if (FMath::Abs(TurretMesh->GetRelativeRotation().Yaw - LimitTargetAngleYaw) < 2.f) // Condition when it is no rotation
+	{
+		bIsRotate = false;
+	}
+
+	else if (FMath::Abs(TurretMesh->GetRelativeRotation().Yaw - LimitTargetAngleYaw) >= 2.f) // Condition when rotation exist
+	{
+		bIsRotate = true;
+	}
 }
 
 void ATurretPawn::Fire()
@@ -157,6 +180,12 @@ void ATurretPawn::Fire()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEfect, ProjectileSpawnPoint->GetComponentLocation());
 	}
+
+	if(ShootSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(), ShootSound, ProjectileSpawnPoint->GetComponentLocation());
+	}
 }
 
 void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
@@ -168,6 +197,11 @@ void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* P
 			if (DeathEfect)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEfect, GetActorLocation());
+			}
+
+			if (DeathSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 			}
 
 			HealthKeeper->Destroy();
