@@ -150,12 +150,12 @@ void ATowerPawn::OnEndOverlap(
 			if (OverlapedActor.IsEmpty())
 			{
 				GetWorldTimerManager().ClearTimer(FireTimerHandle);
-			}
 
-			if (TurretRotationSound && TurretRotationAudioComponent) // if the turret did not have time to aim
-			{
-				TurretRotationAudioComponent->Stop();
-				TurretRotationAudioComponent->DestroyComponent();
+				if (TurretRotationSound && TurretRotationAudioComponent && TurretRotationAudioComponent->IsValidLowLevel()) // if the turret did not have time to aim
+				{
+					TurretRotationAudioComponent->Stop();
+					TurretRotationAudioComponent->DestroyComponent();
+				}
 			}
 		}
 	}
