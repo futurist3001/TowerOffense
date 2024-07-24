@@ -5,6 +5,7 @@
 
 #include "TOMMPlayerController.generated.h"
 
+class UFirstBlockLevelsWidget;
 class UTOMainMenuWidget;
 
 UCLASS()
@@ -12,6 +13,13 @@ class TOWEROFFENSE_API ATOMMPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels")
+	TSubclassOf<UFirstBlockLevelsWidget> FirstBlockLevelsWidgetClass;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels")
+	TObjectPtr<UFirstBlockLevelsWidget> FirstBlockLevelsWidget;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UTOMainMenuWidget> MainMenuWidgetClass;
@@ -28,4 +36,7 @@ private:
 
 	UFUNCTION()
 	void CreateMainMenuWidget();
+
+	UFUNCTION()
+	void CreateFirstBlockLevelsWidget();
 };

@@ -73,6 +73,12 @@ void ATOGameModeBase::BeginPlay()
 	{
 		UGameplayStatics::PlaySound2D(GetWorld(), GameBackMusic);
 	}
+
+	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+
+
+	UKismetSystemLibrary::PrintString(
+		this, FString::Printf(TEXT("Current Level: %d"), LevelSystem->GetCurrentLevel()), true, false, FColor::Purple, 4.f);
 }
 
 void ATOGameModeBase::Tick(float DeltaTime)

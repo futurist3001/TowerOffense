@@ -51,7 +51,7 @@ void ATowerPawn::Tick(float DeltaTime)
 	{
 		// Stop and delete sound
 
-		if (TurretRotationSound && TurretRotationAudioComponent)
+		if (TurretRotationSound && TurretRotationAudioComponent && TurretRotationAudioComponent->IsValidLowLevel())
 		{
 			TurretRotationAudioComponent->Stop();
 			TurretRotationAudioComponent->DestroyComponent();
