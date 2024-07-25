@@ -58,8 +58,12 @@ void AProjectile::OnHit(
 			if (TransmitterTurretPawn->Execute_GetTeam(TransmitterTurretPawn) != ReceiverTurretPawn->Execute_GetTeam(ReceiverTurretPawn))
 			{
 				OtherActor->TakeDamage(Damage, {}, nullptr, this);
-			}
 
+				if (ReceiverTurretPawn->HealthComponent->Health <= 0)
+				{
+					TransmitterTurretPawn->ShakeCameraAfterKilling();
+				}
+			}
 		}
 
 		if (DamageEffect)

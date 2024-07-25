@@ -81,7 +81,6 @@ private:
 	FHitResult ShootingPoint;
 	UAudioComponent* MovementAudioComponent;
 	
-
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

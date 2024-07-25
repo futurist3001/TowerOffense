@@ -12,6 +12,7 @@ class UAudioComponent;
 class UCapsuleComponent;
 class UParticleSystem;
 class USoundBase;
+class UTOCameraShake;
 struct FInputActionValue;
 
 UCLASS()
@@ -78,6 +79,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
 	TObjectPtr<USoundBase> TurretRotationSound;
 
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TSubclassOf<UTOCameraShake> TOCameraShakeClass;
+
 	UPROPERTY(Transient)
 	UMaterialInstanceDynamic* BaseDynamicMaterialInstance;
 
@@ -99,11 +103,15 @@ public:
 		return Team;
 	}
 
-	UFUNCTION()
-	void HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+	void ShakeCameraAfterKilling() const;
 
 	UFUNCTION()
-	void PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+	void HealthCheckedDeath(
+		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+
+	UFUNCTION()
+	void PrintCurrentHealth(
+		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 protected:
 	virtual void BeginPlay() override;
@@ -111,6 +119,7 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void RotateTurret();
 	virtual void Fire();
+	virtual void DestroyActor(AActor* ActorToDestroy);
 
 private:
 	UFUNCTION()

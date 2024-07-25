@@ -11,6 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraFunctionLibrary.h"
+#include "TOCameraShake.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -128,6 +129,12 @@ void ATankPawn::Fire()
 		TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
 
 	Super::Fire();
+
+	if (TOCameraShakeClass)
+	{
+ 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(
+			GetWorld(), TOCameraShakeClass, GetActorLocation(), 0.0f, 1000.0f, 1.f);
+	}
 }
 
 void ATankPawn::RotateTurret()

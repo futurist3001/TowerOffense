@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
+#include "TOCameraShake.h"
 #include "TowerOffense/Generic/MyBlueprintFunctionLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
@@ -188,12 +189,27 @@ void ATurretPawn::Fire()
 	}
 }
 
+void ATurretPawn::DestroyActor(AActor* ActorToDestroy)
+{
+	ActorToDestroy->Destroy();
+}
+
+void ATurretPawn::ShakeCameraAfterKilling() const
+{
+	if (TOCameraShakeClass)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(
+			GetWorld(), TOCameraShakeClass, GetActorLocation(), 0.0f, 6000.0f, 3.f);
+	}
+}
+
 void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
     if (IsValid(HealthKeeper))
 	{
 		if (ParameterHealthComponent->Health <= 0)
 		{
+
 			if (DeathEfect)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEfect, GetActorLocation());
@@ -204,12 +220,13 @@ void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* P
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 			}
 
-			HealthKeeper->Destroy();
+			DestroyActor(HealthKeeper);
 		}
 	}
 }
 
-void ATurretPawn::PrintCurrentHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+void ATurretPawn::PrintCurrentHealth(
+	AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
 	UKismetSystemLibrary::PrintString(
 		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
