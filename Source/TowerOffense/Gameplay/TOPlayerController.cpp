@@ -1,6 +1,7 @@
 #include "TOPlayerController.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/ProgressBar.h"
 #include "Kismet/GameplayStatics.h"
 #include "TankPawn.h"
 #include "TOHUDWidget.h"
@@ -28,6 +29,17 @@ void ATOPlayerController::BeginPlay()
 	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
+
+	if (HUDWidget)
+	{
+		if (APawn* ControllerPawn = GetPawn())
+		{
+			if (ATankPawn* TankPawn = Cast<ATankPawn>(ControllerPawn))
+			{
+				TankPawn->HealthComponent->HealthChanged.AddDynamic(this, &ATOPlayerController::UpdateHUDHealth);
+			}
+		}
+	}
 }
 
 void ATOPlayerController::Tick(float DeltaTime)
@@ -41,7 +53,7 @@ void ATOPlayerController::Tick(float DeltaTime)
 
 	if (HUDWidget)
 	{
-		UpdateHUDWidget(HUDWidget);
+		UpdateHUDEnergy();
 	}
 }
 
@@ -83,20 +95,37 @@ void ATOPlayerController::CreateHUDWidget()
 	{
 		HUDWidget = CreateWidget<UTOHUDWidget>(this, HUDWidgetClass);
 		HUDWidget->AddToViewport();
-		HUDWidget->SetVisibility(ESlateVisibility::Visible);
+		HUDWidget->HealthBar->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidget->EnergyBar->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
-void ATOPlayerController::UpdateHUDWidget(UTOHUDWidget* HUDWidgetParameter)
+void ATOPlayerController::UpdateHUDEnergy()
 {
-	if (HUDWidgetParameter)
+	if (HUDWidget)
 	{
 		if (APawn* ControllerPawn = GetPawn())
 		{
 			if (ATankPawn* TankPawn = Cast<ATankPawn>(ControllerPawn))
 			{
-				HUDWidgetParameter->SetHealth(TankPawn->HealthComponent->Health, TankPawn->HealthComponent->DefaultHealth);
-				HUDWidgetParameter->SetEnergy(TankPawn->CurrentEnergy, TankPawn->MaxEnergy);
+				HUDWidget->SetEnergy(TankPawn->GetCurrentEnergy(), TankPawn->GetMaxEnergy());
+			}
+		}
+	}
+}
+
+void ATOPlayerController::UpdateHUDHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	if (HUDWidget)
+	{
+		if (HealthKeeper)
+		{
+			HUDWidget->SetHealth(
+				ParameterHealthComponent->Health, ParameterHealthComponent->DefaultHealth);
+
+			if (HUDWidget->HealthBar->GetVisibility() != ESlateVisibility::Visible)
+			{
+				HUDWidget->HealthBar->SetVisibility(ESlateVisibility::Visible);
 			}
 		}
 	}

@@ -12,6 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "TOCameraShake.h"
+#include "TOPlayerController.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -234,7 +235,11 @@ void ATankPawn::Tick(float DeltaTime)
 	}
 
 	CurrentTimeFire += DeltaTime;
-	RechargeTimeProjectile += DeltaTime;
+
+	if (CurrentEnergy < MaxEnergy)
+	{
+		RechargeTimeProjectile += DeltaTime;
+	}
 
 	if (RechargeTimeProjectile >= RechargeInterval && CurrentEnergy < MaxEnergy)
 	{

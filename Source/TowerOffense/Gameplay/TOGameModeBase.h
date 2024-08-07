@@ -81,6 +81,7 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	void InitPlayData();
+
 	void Win();
 	void Lose();
 

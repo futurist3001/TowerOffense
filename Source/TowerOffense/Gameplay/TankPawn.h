@@ -20,13 +20,6 @@ class TOWEROFFENSE_API ATankPawn : public ATurretPawn
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
-	float MaxEnergy;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Fire")
-	float CurrentEnergy;
-
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
@@ -55,11 +48,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float Speed;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
 	float MaxEnergy;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Fire")
-	float CurrentEnergy;*/
+	float CurrentEnergy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
 	float FireInterval;
@@ -104,6 +97,16 @@ private:
 	
 public:
 	ATankPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	float GetCurrentEnergy() const
+	{
+		return CurrentEnergy;
+	}
+
+	float GetMaxEnergy() const
+	{
+		return MaxEnergy;
+	}
 
 protected:
 	virtual void BeginPlay() override;

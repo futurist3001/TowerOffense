@@ -12,7 +12,7 @@ class UTOScopeWidget;
 class UTOWinLoseWidget;
 
 UCLASS()
-class TOWEROFFENSE_API ATOPlayerController : public APlayerController
+class TOWEROFFENSE_API ATOPlayerController : public APlayerController 
 {
 	GENERATED_BODY()
 	
@@ -58,7 +58,11 @@ protected:
 	void DestroyPreparationWidget();
 
 	void CreateHUDWidget();
-	void UpdateHUDWidget(UTOHUDWidget* HUDWidgetParameter);
+	void UpdateHUDEnergy();
+
+	UFUNCTION()
+	void UpdateHUDHealth(
+		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 private:
 	UFUNCTION()
