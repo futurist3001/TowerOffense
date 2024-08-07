@@ -114,6 +114,9 @@ void ATOPlayerController::UpdateHUDEnergy()
 			if (ATankPawn* TankPawn = Cast<ATankPawn>(ControllerPawn))
 			{
 				HUDWidget->SetEnergy(TankPawn->GetCurrentEnergy(), TankPawn->GetMaxEnergy());
+
+				TankPawn->IsOldShoot() ? HUDWidget->EnergyBar->SetVisibility(ESlateVisibility::Hidden) :
+					HUDWidget->EnergyBar->SetVisibility(ESlateVisibility::Visible);
 			}
 		}
 	}

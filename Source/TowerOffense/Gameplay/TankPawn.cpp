@@ -42,10 +42,12 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	YawTurnRotator = 0.f;
 	MaxEnergy = 50.f;
 	CurrentEnergy = MaxEnergy;
+	OldShootTime = 10.f;
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
 	bPlayedTurretRotationSoundIteration = false;
+	bIsOldShoot = false;
 
 	MovementEffect = nullptr;
 }
@@ -143,6 +145,8 @@ void ATankPawn::Fire()
 
 		CurrentTimeFire = 0.0f;
 		CurrentEnergy -= 10.f;
+
+		bIsOldShoot = false;
 	}
 }
 
@@ -236,6 +240,11 @@ void ATankPawn::Tick(float DeltaTime)
 
 	CurrentTimeFire += DeltaTime;
 
+	if (CurrentTimeFire > OldShootTime)
+	{
+		bIsOldShoot = true;
+	}
+
 	if (CurrentEnergy < MaxEnergy)
 	{
 		RechargeTimeProjectile += DeltaTime;
@@ -246,8 +255,6 @@ void ATankPawn::Tick(float DeltaTime)
 		CurrentEnergy += 10.f;
 		RechargeTimeProjectile = 0.0f;
 	}
-
-	UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(CurrentEnergy), true, false, FColor::Purple, DeltaTime);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -218,7 +218,6 @@ void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* P
 	{
 		if (ParameterHealthComponent->Health <= 0)
 		{
-
 			if (DeathEfect)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEfect, GetActorLocation());

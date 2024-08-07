@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Fire")
 	float CurrentEnergy;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire")
+	float OldShootTime; // After this time the last shoot is considered as old shoot
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
 	float FireInterval;
 
@@ -92,6 +95,7 @@ private:
 	uint8 bIsStopMoving : 1;
 	uint8 bReverseAttempt : 1;
 	uint8 bPlayedTurretRotationSoundIteration : 1;
+	uint8 bIsOldShoot : 1;
 	FHitResult ShootingPoint;
 	UAudioComponent* MovementAudioComponent;
 	
@@ -106,6 +110,11 @@ public:
 	float GetMaxEnergy() const
 	{
 		return MaxEnergy;
+	}
+
+	bool IsOldShoot() const
+	{
+		return bIsOldShoot;
 	}
 
 protected:
