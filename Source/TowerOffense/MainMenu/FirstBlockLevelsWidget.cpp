@@ -2,7 +2,7 @@
 
 #include "Components/Button.h"
 
-void UFirstBlockLevelsWidget::DoOpenLevel()
+void UFirstBlockLevelsWidget::DoOpenFirtsBlockLevels()
 {
 	for (auto& Level : FirstBlockLevels)
 	{
@@ -35,6 +35,6 @@ void UFirstBlockLevelsWidget::NativeConstruct()
 
 	for (auto& Level : FirstBlockLevels)
 	{
-		Level.Value->OnPressed.AddDynamic(this, &UFirstBlockLevelsWidget::DoOpenLevel);
+		Level.Value->OnPressed.AddDynamic(this, &UFirstBlockLevelsWidget::DoOpenFirtsBlockLevels);
 	}
 }

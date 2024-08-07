@@ -2,6 +2,8 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "TankPawn.h"
+#include "TOHUDWidget.h"
 #include "TOPreparationWidget.h"
 #include "TOScopeWidget.h"
 #include "TOWinLoseWidget.h"
@@ -19,6 +21,7 @@ void ATOPlayerController::BeginPlay()
 
 	CreateScopeWidget();
 	CreatePreparationWidget();
+	CreateHUDWidget();
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATOPlayerController::DestroyPreparationWidget, 4.f, false);
 
@@ -34,6 +37,11 @@ void ATOPlayerController::Tick(float DeltaTime)
 	if (PreparationWidget)
 	{
 		PreparationWidget->SetPreparationText();
+	}
+
+	if (HUDWidget)
+	{
+		UpdateHUDWidget(HUDWidget);
 	}
 }
 
@@ -65,6 +73,31 @@ void ATOPlayerController::DestroyPreparationWidget()
 
 			PreparationWidget->RemoveFromViewport();
 			PreparationWidget = nullptr;
+		}
+	}
+}
+
+void ATOPlayerController::CreateHUDWidget()
+{
+	if (HUDWidgetClass)
+	{
+		HUDWidget = CreateWidget<UTOHUDWidget>(this, HUDWidgetClass);
+		HUDWidget->AddToViewport();
+		HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ATOPlayerController::UpdateHUDWidget(UTOHUDWidget* HUDWidgetParameter)
+{
+	if (HUDWidgetParameter)
+	{
+		if (APawn* ControllerPawn = GetPawn())
+		{
+			if (ATankPawn* TankPawn = Cast<ATankPawn>(ControllerPawn))
+			{
+				HUDWidgetParameter->SetHealth(TankPawn->HealthComponent->Health, TankPawn->HealthComponent->DefaultHealth);
+				HUDWidgetParameter->SetEnergy(TankPawn->CurrentEnergy, TankPawn->MaxEnergy);
+			}
 		}
 	}
 }

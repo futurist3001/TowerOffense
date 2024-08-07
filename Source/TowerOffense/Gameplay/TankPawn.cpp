@@ -39,6 +39,8 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	SpeedStopGas = 0.f;
 	SpeedStopBraking = 0.f;
 	YawTurnRotator = 0.f;
+	MaxEnergy = 50.f;
+	CurrentEnergy = MaxEnergy;
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
@@ -123,17 +125,23 @@ void ATankPawn::Turn(const FInputActionValue& Value)
 
 void ATankPawn::Fire()
 {
-	Start = ProjectileSpawnPoint->GetComponentLocation();
-	End = Start + (FRotator(
-		TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Yaw + 90.f,
-		TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
-
-	Super::Fire();
-
-	if (TOCameraShakeClass)
+	if (CurrentTimeFire >= FireInterval && CurrentEnergy > 0.f)
 	{
- 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(
-			GetWorld(), TOCameraShakeClass, GetActorLocation(), 0.0f, 1000.0f, 1.f);
+		Start = ProjectileSpawnPoint->GetComponentLocation();
+		End = Start + (FRotator(
+			TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Yaw + 90.f,
+			TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
+
+		Super::Fire();
+
+		if (TOCameraShakeClass)
+		{
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(
+				GetWorld(), TOCameraShakeClass, GetActorLocation(), 0.0f, 1000.0f, 1.f);
+		}
+
+		CurrentTimeFire = 0.0f;
+		CurrentEnergy -= 10.f;
 	}
 }
 
@@ -224,6 +232,17 @@ void ATankPawn::Tick(float DeltaTime)
 			GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
 			35, 15, FColor::Red, false, 0.03f, 0, 0.5);
 	}
+
+	CurrentTimeFire += DeltaTime;
+	RechargeTimeProjectile += DeltaTime;
+
+	if (RechargeTimeProjectile >= RechargeInterval && CurrentEnergy < MaxEnergy)
+	{
+		CurrentEnergy += 10.f;
+		RechargeTimeProjectile = 0.0f;
+	}
+
+	UKismetSystemLibrary::PrintString(this, FString::SanitizeFloat(CurrentEnergy), true, false, FColor::Purple, DeltaTime);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

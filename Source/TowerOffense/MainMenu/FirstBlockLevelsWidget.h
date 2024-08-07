@@ -61,7 +61,7 @@ private:
 
 public:
 	UFUNCTION()
-	void DoOpenLevel();
+	void DoOpenFirtsBlockLevels();
 
 protected:
 	virtual void NativePreConstruct() override;

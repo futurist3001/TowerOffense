@@ -199,7 +199,7 @@ void ATurretPawn::ShakeCameraAfterKilling() const
 	if (TOCameraShakeClass)
 	{
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(
-			GetWorld(), TOCameraShakeClass, GetActorLocation(), 0.0f, 6000.0f, 3.f);
+			GetWorld(), TOCameraShakeClass, GetActorLocation(), 6000.0f, 10000.0f, 10.f);
 	}
 }
 

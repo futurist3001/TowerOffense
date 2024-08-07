@@ -19,7 +19,7 @@ void ULevelSystem::Deinitialize()
 
 void ULevelSystem::OpenRelativeLevel(const UObject* WorldContextObject, int32 LevelIndex)
 {
-	if (Levels.IsValidIndex(LevelIndex))
+	if (Levels.IsValidIndex(LevelIndex - 1))
 	{
 		FString LevelName = FString::Printf(TEXT("Level_%d"), Levels[LevelIndex - 1]);
 		UGameplayStatics::OpenLevel(WorldContextObject, FName(*LevelName), true);

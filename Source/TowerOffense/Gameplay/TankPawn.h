@@ -20,6 +20,13 @@ class TOWEROFFENSE_API ATankPawn : public ATurretPawn
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float MaxEnergy;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Fire")
+	float CurrentEnergy;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
@@ -48,6 +55,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float Speed;
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float MaxEnergy;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Fire")
+	float CurrentEnergy;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float FireInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float RechargeInterval;
+
 	UPROPERTY(VisibleAnywhere, Category = "VFX")
 	TObjectPtr<USceneComponent> RightTankTrack;
 
@@ -75,6 +94,8 @@ private:
 	float SpeedStopBraking; // speed after braking
 	float YawCameraRotator;
 	float YawTurnRotator;
+	float CurrentTimeFire; // For calculating fire interval
+	float RechargeTimeProjectile; // For calculating recharge projectile interval
 	uint8 bIsStopMoving : 1;
 	uint8 bReverseAttempt : 1;
 	uint8 bPlayedTurretRotationSoundIteration : 1;

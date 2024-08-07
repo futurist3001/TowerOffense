@@ -6,6 +6,7 @@
 
 #include "TOPlayerController.generated.h"
 
+class UTOHUDWidget;
 class UTOPreparationWidget;
 class UTOScopeWidget;
 class UTOWinLoseWidget;
@@ -25,6 +26,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UTOPreparationWidget> PreparationWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UTOHUDWidget> HUDWidgetClass;
+
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOWinLoseWidget> WinLoseWidget;
 
@@ -33,6 +37,9 @@ protected:
 
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOPreparationWidget> PreparationWidget;
+
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UTOHUDWidget> HUDWidget;
 
 private:
 	FTimerHandle TimerHandle;
@@ -49,6 +56,9 @@ protected:
 
 	void CreatePreparationWidget();
 	void DestroyPreparationWidget();
+
+	void CreateHUDWidget();
+	void UpdateHUDWidget(UTOHUDWidget* HUDWidgetParameter);
 
 private:
 	UFUNCTION()
