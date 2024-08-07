@@ -4,6 +4,7 @@
 #include "Components/WidgetComponent.h"
 #include"HealthTurretWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
 #include "TOCameraShake.h"
@@ -130,6 +131,11 @@ void ATurretPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RotationCurrentTime = DeltaTime;
+
+	HealthWidgetComponent->SetWorldRotation(
+		UKismetMathLibrary::FindLookAtRotation(
+			HealthWidgetComponent->GetComponentLocation(), 
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraLocation()));
 }
 
 // using OnConstruction(const FTransform &Transform) leads to unpredictable results
