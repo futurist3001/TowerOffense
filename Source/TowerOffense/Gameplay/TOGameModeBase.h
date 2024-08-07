@@ -45,9 +45,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	EGamePhase GamePhase;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
-	TObjectPtr<USoundBase> GameBackMusic;
-
 private:
 	int32 NumberTowers;
 	int32 NumberTanks;

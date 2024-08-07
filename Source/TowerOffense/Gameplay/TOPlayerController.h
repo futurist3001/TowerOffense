@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOHUDWidget> HUDWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> GameBackMusic;
+
 private:
 	FTimerHandle TimerHandle;
 

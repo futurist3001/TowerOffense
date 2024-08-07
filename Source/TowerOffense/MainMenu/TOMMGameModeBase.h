@@ -16,9 +16,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MapName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
-	TObjectPtr<USoundBase> MMBackSound;
-
 public:
 	ATOMMGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

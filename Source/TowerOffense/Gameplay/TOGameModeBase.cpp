@@ -69,11 +69,6 @@ void ATOGameModeBase::BeginPlay()
 
 	InitPlayData();
 
-	if (GameBackMusic)
-	{
-		UGameplayStatics::PlaySound2D(GetWorld(), GameBackMusic);
-	}
-
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 
 

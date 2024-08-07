@@ -2,6 +2,7 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "FirstBlockLevelsWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "SecondBlockLevelsWidget.h"
 #include "TOMainMenuWidget.h"
 #include "TowerOffense/Generic/LevelSystem.h"
@@ -9,6 +10,11 @@
 void ATOMMPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (MMBackSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), MMBackSound);
+	}
 
 	LimitPlayerMovement();
 

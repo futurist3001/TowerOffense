@@ -20,6 +20,11 @@ void ATOPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GameBackMusic)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), GameBackMusic);
+	}
+
 	CreateScopeWidget();
 	CreatePreparationWidget();
 	CreateHUDWidget();

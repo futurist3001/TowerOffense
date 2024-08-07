@@ -10,6 +10,8 @@ void ULevelSystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		Levels.Add(i + 1);
 	}
+
+	CurrentLevel = 0;
 }
 
 void ULevelSystem::Deinitialize()

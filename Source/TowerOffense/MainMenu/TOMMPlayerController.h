@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTOMainMenuWidget> MainMenuWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
+	TObjectPtr<USoundBase> MMBackSound;
+
 protected:
 	virtual void BeginPlay() override;
 

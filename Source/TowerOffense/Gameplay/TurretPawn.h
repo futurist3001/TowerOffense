@@ -13,6 +13,7 @@ class UCapsuleComponent;
 class UParticleSystem;
 class USoundBase;
 class UTOCameraShake;
+class UWidgetComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -32,6 +33,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USceneComponent> ProjectileSpawnPoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthWidgetComponent;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileActor;
@@ -111,6 +115,10 @@ public:
 
 	UFUNCTION()
 	void PrintCurrentHealth(
+		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
+
+	UFUNCTION()
+	void UpdateHealthBarComponent(
 		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 protected:

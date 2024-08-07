@@ -1,6 +1,8 @@
 #include "TurretPawn.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
+#include"HealthTurretWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Projectile.h"
@@ -16,10 +18,12 @@ ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Component"));
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Widget Component"));
 	HealthComponent = CreateDefaultSubobject<UTOHealthComponent>(TEXT("HealthComponent"));
 
 	SetRootComponent(CapsuleComponent);
 
+	HealthWidgetComponent->SetupAttachment(RootComponent);
 	BaseMesh->SetupAttachment(RootComponent);
 	TurretMesh->SetupAttachment(BaseMesh);
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
@@ -112,8 +116,13 @@ void ATurretPawn::BeginPlay()
 
 	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::HealthCheckedDeath);
 	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::PrintCurrentHealth);
+	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::UpdateHealthBarComponent);
 
-	ATOGameModeBase* GameModeBase = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode()); // for future
+	if (UHealthTurretWidget* HealthBarWidget = Cast<UHealthTurretWidget>(HealthWidgetComponent->GetWidget()))
+	{
+		HealthBarWidget->SetHealthBar(
+			HealthComponent->Health, HealthComponent->DefaultHealth);
+	}
 }
 
 void ATurretPawn::Tick(float DeltaTime)
@@ -231,4 +240,17 @@ void ATurretPawn::PrintCurrentHealth(
 	UKismetSystemLibrary::PrintString(
 		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
 		true, false, FColor::Green, 3.f);
+}
+
+void ATurretPawn::UpdateHealthBarComponent(
+	AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
+{
+	if (HealthKeeper)
+	{
+		if (UHealthTurretWidget* HealthBarWidget = Cast<UHealthTurretWidget>(HealthWidgetComponent->GetWidget()))
+		{
+			HealthBarWidget->SetHealthBar(
+				ParameterHealthComponent->Health, ParameterHealthComponent->DefaultHealth);
+		}
+	}
 }

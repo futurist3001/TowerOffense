@@ -33,9 +33,4 @@ void ATOMMGameModeBase::OpenRelativeLevelCC(int32 LevelIndex) const
 void ATOMMGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (MMBackSound)
-	{
-		UGameplayStatics::PlaySound2D(GetWorld(), MMBackSound);
-	}
 }
