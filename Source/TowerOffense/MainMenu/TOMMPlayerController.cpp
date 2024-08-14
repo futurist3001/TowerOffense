@@ -1,6 +1,7 @@
 #include "TOMMPlayerController.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "PageLevelWidget.h"
 #include "FirstBlockLevelsWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "SecondBlockLevelsWidget.h"
@@ -18,9 +19,10 @@ void ATOMMPlayerController::BeginPlay()
 
 	LimitPlayerMovement();
 
-	CreateMainMenuWidget();
+	//CreateMainMenuWidget();
 	//CreateFirstBlockLevelsWidget();
 	//CreateSecondBlockLevelsWidget();
+	CreatePageLevelWidget();
 }
 
 void ATOMMPlayerController::LimitPlayerMovement()
@@ -63,5 +65,18 @@ void ATOMMPlayerController::CreateSecondBlockLevelsWidget()
 
 		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 		SecondBlockLevelsWidget->OnPressedSecondBlockButton.AddDynamic(LevelSystem, &ULevelSystem::OpenRelativeLevel);
+	}
+}
+
+void ATOMMPlayerController::CreatePageLevelWidget()
+{
+	if (PageLevelClass)
+	{
+		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+
+		PageLevelWidget = CreateWidget<UPageLevelWidget>(this, PageLevelClass);
+		PageLevelWidget->InitializePage(10, LevelSystem->Levels.Num());
+		PageLevelWidget->AddToViewport();
+		PageLevelWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

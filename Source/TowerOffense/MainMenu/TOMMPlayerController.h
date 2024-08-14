@@ -6,6 +6,7 @@
 #include "TOMMPlayerController.generated.h"
 
 class UFirstBlockLevelsWidget;
+class UPageLevelWidget;
 class USecondBlockLevelsWidget;
 class UTOMainMenuWidget;
 
@@ -26,6 +27,12 @@ public:
 
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels")
 	TObjectPtr<USecondBlockLevelsWidget> SecondBlockLevelsWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels") // ?????????????????????????
+	TSubclassOf<UPageLevelWidget> PageLevelClass;
+	
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels") // ????????????????????????
+	TObjectPtr<UPageLevelWidget> PageLevelWidget;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
@@ -52,4 +59,6 @@ private:
 
 	UFUNCTION()
 	void CreateSecondBlockLevelsWidget();
+
+	void CreatePageLevelWidget();
 };
