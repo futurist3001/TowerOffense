@@ -15,6 +15,10 @@ class TOWEROFFENSE_API UPageLevelWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> InitializeAnimation;
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> VerticalBox;

@@ -78,5 +78,6 @@ void ATOMMPlayerController::CreatePageLevelWidget()
 		PageLevelWidget->InitializePage(10, LevelSystem->Levels.Num());
 		PageLevelWidget->AddToViewport();
 		PageLevelWidget->SetVisibility(ESlateVisibility::Visible);
+		PageLevelWidget->PlayAnimationReverse(PageLevelWidget->InitializeAnimation);
 	}
 }
