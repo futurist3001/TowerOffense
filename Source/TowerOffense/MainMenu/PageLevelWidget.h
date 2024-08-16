@@ -19,6 +19,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> VerticalBox;
 
+	TObjectPtr<UVerticalBox> CopyVerticalBox;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> UpperHorizontalBox;
 
@@ -29,13 +31,19 @@ private:
 	TSubclassOf<UButtonLevelWidget> ButtonLevelWidgetClass;
 
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> SlideAnimation;
+	TObjectPtr<UWidgetAnimation> FirstPageSlideAnimation;
+
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> SecondPageSlideAnimation;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> PreviousButton;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> NextButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> HomeButton;
 
 	int32 CurrentPage;
 	int32 TotalPages;
@@ -54,10 +62,13 @@ protected:
 	virtual void NativeConstruct() override;
 
 private:
-	void CreateButtons(int32 StratIndex, int32 EndIndex);
+	void CreateButtons(int32 StartIndex, int32 EndIndex);
 
 	void UpdatePageButtons();
 
 	UFUNCTION()
 	void OnLevelSelected(int32 LevelIndex);
+
+	UFUNCTION()
+	void DestroyPageLevelWidget();
 };

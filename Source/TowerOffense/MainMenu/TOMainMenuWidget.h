@@ -23,6 +23,9 @@ protected:
 	TObjectPtr<UTextBlock> TextStartGame;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> LevelButton;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> QuitGameButton;
 
 	UPROPERTY(meta = (BindWidget))
@@ -34,6 +37,13 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> GameNameText;
 
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> MMSlideAnimation;
+
 protected:
 	virtual void NativeConstruct() override;
+
+private:
+	UFUNCTION()
+	void DestroyMMWidget();
 };

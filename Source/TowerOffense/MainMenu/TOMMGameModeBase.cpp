@@ -3,7 +3,6 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "FirstBlockLevelsWidget.h"
 #include "Kismet/GameplayStatics.h"
-//#include "TOMMPlayerController.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
 ATOMMGameModeBase::ATOMMGameModeBase(const FObjectInitializer& ObjectInitializer)
@@ -28,9 +27,4 @@ void ATOMMGameModeBase::OpenRelativeLevelCC(int32 LevelIndex) const
 {
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 	LevelSystem->OpenRelativeLevel(GetWorld(), LevelIndex);
-}
-
-void ATOMMGameModeBase::BeginPlay()
-{
-	Super::BeginPlay();
 }

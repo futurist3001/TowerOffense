@@ -5,9 +5,9 @@
 
 #include "TOMMPlayerController.generated.h"
 
-class UFirstBlockLevelsWidget;
+//class UFirstBlockLevelsWidget;
 class UPageLevelWidget;
-class USecondBlockLevelsWidget;
+//class USecondBlockLevelsWidget;
 class UTOMainMenuWidget;
 
 UCLASS()
@@ -16,7 +16,7 @@ class TOWEROFFENSE_API ATOMMPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels")
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels")
 	TSubclassOf<UFirstBlockLevelsWidget> FirstBlockLevelsWidgetClass;
 
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels")
@@ -26,12 +26,12 @@ public:
 	TSubclassOf<USecondBlockLevelsWidget> SecondBlockLevelsWidgetClass;
 
 	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels")
-	TObjectPtr<USecondBlockLevelsWidget> SecondBlockLevelsWidget;
+	TObjectPtr<USecondBlockLevelsWidget> SecondBlockLevelsWidget;*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels") // ?????????????????????????
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Levels")
 	TSubclassOf<UPageLevelWidget> PageLevelClass;
 	
-	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels") // ????????????????????????
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Levels")
 	TObjectPtr<UPageLevelWidget> PageLevelWidget;
 
 protected:
@@ -44,6 +44,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SFX")
 	TObjectPtr<USoundBase> MMBackSound;
 
+public:
+	UFUNCTION()
+	void CreatePageLevelWidget();
+
+	UFUNCTION()
+	void CreateMainMenuWidget();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -51,14 +58,9 @@ private:
 	UFUNCTION()
 	void LimitPlayerMovement();
 
-	UFUNCTION()
-	void CreateMainMenuWidget();
-
-	UFUNCTION()
+	/*UFUNCTION()
 	void CreateFirstBlockLevelsWidget();
 
 	UFUNCTION()
-	void CreateSecondBlockLevelsWidget();
-
-	void CreatePageLevelWidget();
+	void CreateSecondBlockLevelsWidget();*/
 };

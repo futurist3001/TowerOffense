@@ -4,6 +4,7 @@
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 #include "Components/VerticalBox.h"
+#include "TOMMPlayerController.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
 void UPageLevelWidget::InitializePage(int32 MaxButtonsPerPage, int32 TotalLevels)
@@ -17,10 +18,15 @@ void UPageLevelWidget::InitializePage(int32 MaxButtonsPerPage, int32 TotalLevels
 
 void UPageLevelWidget::NextPage()
 {
-	if (CurrentPage <= TotalPages - 1)
+	if (CurrentPage < TotalPages - 1)
 	{
 		CurrentPage++;
-		PlayAnimationForward(SlideAnimation);
+
+		if (SecondPageSlideAnimation)
+		{
+			PlayAnimationReverse(SecondPageSlideAnimation);
+		}
+
 		UpdatePageButtons();
 	}
 }
@@ -30,7 +36,12 @@ void UPageLevelWidget::PreviousPage()
 	if (CurrentPage > 0)
 	{
 		CurrentPage--;
-		PlayAnimationReverse(SlideAnimation);
+
+		if (FirstPageSlideAnimation)
+		{
+			PlayAnimationReverse(FirstPageSlideAnimation);
+		}
+
 		UpdatePageButtons();
 	}
 }
@@ -39,20 +50,24 @@ void UPageLevelWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	auto* PlayerController = GetWorld()->GetFirstPlayerController<ATOMMPlayerController>();
+
+	CopyVerticalBox = VerticalBox;
+
 	NextButton->OnClicked.AddDynamic(this, &UPageLevelWidget::NextPage);
 	PreviousButton->OnClicked.AddDynamic(this, &UPageLevelWidget::PreviousPage);
+	HomeButton->OnClicked.AddDynamic(PlayerController, &ATOMMPlayerController::CreateMainMenuWidget);
+	HomeButton->OnClicked.AddDynamic(this, &UPageLevelWidget::DestroyPageLevelWidget);
 }
 
-void UPageLevelWidget::CreateButtons(int32 StratIndex, int32 EndIndex)
+void UPageLevelWidget::CreateButtons(int32 StartIndex, int32 EndIndex)
 {
 	if (ButtonLevelWidgetClass)
 	{
-		for (int32 i = StratIndex; i < EndIndex; i++)
+		for (int32 i = StartIndex; i < EndIndex; i++)
 		{
-			if (i >= 0 && i < EndIndex / 2)
+			if (i >= StartIndex && i < EndIndex - 5 && UpperHorizontalBox) // subtract 5 because in every row 5 buttons
 			{
-				if (UpperHorizontalBox)
-				{
 					UButtonLevelWidget* LevelButton =
 						CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
 					LevelButton->InitializeButton(i + 1);
@@ -62,13 +77,10 @@ void UPageLevelWidget::CreateButtons(int32 StratIndex, int32 EndIndex)
 
 					UpperHorizontalBox->AddChildToHorizontalBox(LevelButton);
 					VerticalBox->AddChildToVerticalBox(UpperHorizontalBox);
-				}
 			}
 
-			else if (i >= EndIndex / 2 && i < EndIndex)
+			else if (i >= EndIndex - 5 && i < EndIndex && LowerHorizontalBox) // subtract 5 because in every row 5 buttons
 			{
-				if (LowerHorizontalBox)
-				{
 					UButtonLevelWidget* LevelButton =
 						CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
 					LevelButton->InitializeButton(i + 1);
@@ -78,7 +90,6 @@ void UPageLevelWidget::CreateButtons(int32 StratIndex, int32 EndIndex)
 
 					LowerHorizontalBox->AddChildToHorizontalBox(LevelButton);
 					VerticalBox->AddChildToVerticalBox(LowerHorizontalBox);
-				}
 			}
 		}
 	}
@@ -94,6 +105,8 @@ void UPageLevelWidget::UpdatePageButtons()
 	UpperHorizontalBox->ClearChildren();
 	LowerHorizontalBox->ClearChildren();
 
+	VerticalBox = CopyVerticalBox;
+
 	CreateButtons(StartIndex, EndIndex);
 }
 
@@ -101,4 +114,9 @@ void UPageLevelWidget::OnLevelSelected(int32 LevelIndex)
 {
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 	LevelSystem->OpenRelativeLevel(GetWorld(), LevelIndex);
+}
+
+void UPageLevelWidget::DestroyPageLevelWidget()
+{
+	RemoveFromParent();
 }

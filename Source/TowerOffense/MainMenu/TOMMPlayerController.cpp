@@ -2,9 +2,9 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "PageLevelWidget.h"
-#include "FirstBlockLevelsWidget.h"
+//#include "FirstBlockLevelsWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "SecondBlockLevelsWidget.h"
+//#include "SecondBlockLevelsWidget.h"
 #include "TOMainMenuWidget.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
@@ -19,10 +19,10 @@ void ATOMMPlayerController::BeginPlay()
 
 	LimitPlayerMovement();
 
-	//CreateMainMenuWidget();
+	CreateMainMenuWidget();
 	//CreateFirstBlockLevelsWidget();
 	//CreateSecondBlockLevelsWidget();
-	CreatePageLevelWidget();
+	//CreatePageLevelWidget();
 }
 
 void ATOMMPlayerController::LimitPlayerMovement()
@@ -42,7 +42,7 @@ void ATOMMPlayerController::CreateMainMenuWidget()
 	}
 }
 
-void ATOMMPlayerController::CreateFirstBlockLevelsWidget()
+/*void ATOMMPlayerController::CreateFirstBlockLevelsWidget()
 {
 	if (FirstBlockLevelsWidgetClass)
 	{
@@ -66,7 +66,7 @@ void ATOMMPlayerController::CreateSecondBlockLevelsWidget()
 		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 		SecondBlockLevelsWidget->OnPressedSecondBlockButton.AddDynamic(LevelSystem, &ULevelSystem::OpenRelativeLevel);
 	}
-}
+}*/
 
 void ATOMMPlayerController::CreatePageLevelWidget()
 {

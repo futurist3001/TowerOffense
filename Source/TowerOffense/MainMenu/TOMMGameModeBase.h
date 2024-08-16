@@ -27,7 +27,4 @@ public:
 
 	UFUNCTION(Exec, Category = "Levels")
 	void OpenRelativeLevelCC(int32 LevelIndex) const; // Console command
-
-protected:
-	virtual void BeginPlay() override;
 };
