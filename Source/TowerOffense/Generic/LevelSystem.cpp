@@ -46,7 +46,7 @@ void ULevelSystem::OpenNextLevel(const UObject* WorldContextObject, int32 NextLe
 {
 	for (auto& Level : Levels)
 	{
-		if (Level.Key == NextLevelIndex)
+		if (Level.Value.CurrentLevel == NextLevelIndex)
 		{
 			Level.Value.bIsUnlockedLevel = true;
 		}
