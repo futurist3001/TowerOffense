@@ -6,12 +6,19 @@ void ULevelSystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	for (int i = 0; i < 20; ++i) // fill array with 20 levels
-	{
-		Levels.Add(i + 1);
-	}
+	NumberLevels = 20;
 
-	CurrentLevel = 0;
+	for (int i = 1; i <= NumberLevels; ++i)
+	{
+		FLevelData LevelData;
+
+		i == 1 ? LevelData.PreviousLevel = i : LevelData.PreviousLevel = i - 1;
+		LevelData.CurrentLevel = i;
+		i == NumberLevels ? LevelData.NextLevel = i : LevelData.NextLevel = i + 1;
+		i == 1 ? LevelData.bIsUnlockedLevel = true : LevelData.bIsUnlockedLevel = false;
+
+		Levels.Add(i, LevelData);
+	}
 }
 
 void ULevelSystem::Deinitialize()
@@ -21,16 +28,27 @@ void ULevelSystem::Deinitialize()
 
 void ULevelSystem::OpenRelativeLevel(const UObject* WorldContextObject, int32 LevelIndex)
 {
-	if (Levels.IsValidIndex(LevelIndex - 1))
+	for (const auto& Level : Levels)
 	{
-		FString LevelName = FString::Printf(TEXT("Level_%d"), Levels[LevelIndex - 1]);
-		UGameplayStatics::OpenLevel(WorldContextObject, FName(*LevelName), true);
+		if (Level.Key == LevelIndex && Level.Value.bIsUnlockedLevel)
+		{
+			FString LevelName = FString::Printf(TEXT("Level_%d"), Level.Value.CurrentLevel);
+			UGameplayStatics::OpenLevel(WorldContextObject, FName(*LevelName), true);
 
-		CurrentLevel = Levels[LevelIndex - 1];
+			ActualPreviousLevel = Level.Value.PreviousLevel;
+			ActualCurrentLevel = Level.Value.CurrentLevel;
+			ActualNextLevel = Level.Value.NextLevel;
+		}
 	}
 }
 
-int32 ULevelSystem::GetCurrentLevel() const
+void ULevelSystem::OpenNextLevel(const UObject* WorldContextObject, int32 NextLevelIndex)
 {
-	return CurrentLevel;
+	for (auto& Level : Levels)
+	{
+		if (Level.Key == NextLevelIndex)
+		{
+			Level.Value.bIsUnlockedLevel = true;
+		}
+	}
 }

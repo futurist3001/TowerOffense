@@ -71,9 +71,9 @@ void ATOGameModeBase::BeginPlay()
 
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 
-
-	UKismetSystemLibrary::PrintString(
-		this, FString::Printf(TEXT("Current Level: %d"), LevelSystem->GetCurrentLevel()), true, false, FColor::Purple, 4.f);
+	UKismetSystemLibrary::PrintString(this, FString::Printf(
+			TEXT("Current Level: %d"), LevelSystem->ActualCurrentLevel),
+		true, false, FColor::Purple, 4.f);
 }
 
 void ATOGameModeBase::Tick(float DeltaTime)
@@ -104,6 +104,9 @@ void ATOGameModeBase::InitPlayData()
 void ATOGameModeBase::Win()
 {
 	SetEndGameState(EGamePhase::Win);
+
+	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+	LevelSystem->OpenNextLevel(GetWorld(), LevelSystem->ActualNextLevel);
 }
 
 void ATOGameModeBase::Lose()

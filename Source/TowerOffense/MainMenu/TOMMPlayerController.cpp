@@ -2,9 +2,7 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "PageLevelWidget.h"
-//#include "FirstBlockLevelsWidget.h"
 #include "Kismet/GameplayStatics.h"
-//#include "SecondBlockLevelsWidget.h"
 #include "TOMainMenuWidget.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
@@ -20,9 +18,6 @@ void ATOMMPlayerController::BeginPlay()
 	LimitPlayerMovement();
 
 	CreateMainMenuWidget();
-	//CreateFirstBlockLevelsWidget();
-	//CreateSecondBlockLevelsWidget();
-	//CreatePageLevelWidget();
 }
 
 void ATOMMPlayerController::LimitPlayerMovement()
@@ -42,32 +37,6 @@ void ATOMMPlayerController::CreateMainMenuWidget()
 	}
 }
 
-/*void ATOMMPlayerController::CreateFirstBlockLevelsWidget()
-{
-	if (FirstBlockLevelsWidgetClass)
-	{
-		FirstBlockLevelsWidget = CreateWidget<UFirstBlockLevelsWidget>(this, FirstBlockLevelsWidgetClass);
-		FirstBlockLevelsWidget->AddToViewport();
-		FirstBlockLevelsWidget->SetVisibility(ESlateVisibility::Visible);
-
-		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
-		FirstBlockLevelsWidget->OnPressedFirstBlockButton.AddDynamic(LevelSystem, &ULevelSystem::OpenRelativeLevel);
-	}
-}
-
-void ATOMMPlayerController::CreateSecondBlockLevelsWidget()
-{
-	if (SecondBlockLevelsWidgetClass)
-	{
-		SecondBlockLevelsWidget = CreateWidget<USecondBlockLevelsWidget>(this, SecondBlockLevelsWidgetClass);
-		SecondBlockLevelsWidget->AddToViewport();
-		SecondBlockLevelsWidget->SetVisibility(ESlateVisibility::Visible);
-
-		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
-		SecondBlockLevelsWidget->OnPressedSecondBlockButton.AddDynamic(LevelSystem, &ULevelSystem::OpenRelativeLevel);
-	}
-}*/
-
 void ATOMMPlayerController::CreatePageLevelWidget()
 {
 	if (PageLevelClass)
@@ -75,7 +44,7 @@ void ATOMMPlayerController::CreatePageLevelWidget()
 		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 
 		PageLevelWidget = CreateWidget<UPageLevelWidget>(this, PageLevelClass);
-		PageLevelWidget->InitializePage(10, LevelSystem->Levels.Num());
+		PageLevelWidget->InitializePage(10, LevelSystem->GetNumberLevels());
 		PageLevelWidget->AddToViewport();
 		PageLevelWidget->SetVisibility(ESlateVisibility::Visible);
 		PageLevelWidget->PlayAnimationReverse(PageLevelWidget->InitializeAnimation);

@@ -29,6 +29,11 @@ private:
 public:
 	void InitializeButton(int32 LevelIndex);
 
+	int32 GetCurrentLevelIndex() const
+	{
+		return CurrentLevelIndex;
+	}
+
 protected:
 	virtual void NativeConstruct() override;
 

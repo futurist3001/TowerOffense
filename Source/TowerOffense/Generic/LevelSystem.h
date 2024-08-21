@@ -5,14 +5,38 @@
 
 #include "LevelSystem.generated.h"
 
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 PreviousLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CurrentLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NextLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsUnlockedLevel;
+};
+
 UCLASS()
 class TOWEROFFENSE_API ULevelSystem : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	TArray<int32> Levels;
-	int32 CurrentLevel;
+	TMap<int32, FLevelData> Levels;
+	int32 ActualPreviousLevel;
+	int32 ActualCurrentLevel;
+	int32 ActualNextLevel;
+
+private:
+	int32 NumberLevels;
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -21,5 +45,11 @@ public:
 	UFUNCTION()
 	void OpenRelativeLevel(const UObject* WorldContextObject, int32 LevelIndex);
 
-	int32 GetCurrentLevel() const;
+	UFUNCTION()
+	void OpenNextLevel(const UObject* WorldContextObject, int32 NextLevelIndex);
+
+	int32 GetNumberLevels() const
+	{ 
+		return NumberLevels;
+	}
 };

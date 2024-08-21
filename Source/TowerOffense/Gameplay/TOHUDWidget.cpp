@@ -24,7 +24,7 @@ void UTOHUDWidget::SetEnemiesText(int32 TowersRemain)
 {
 	if (EnemiesTowersText)
 	{
-		FString FormattedString = FString::Printf(TEXT("Enemies remain: %d"), TowersRemain);
+		FString FormattedString = FString::Printf(TEXT("Towers remain: %d"), TowersRemain);
 
 		EnemiesTowersText->SetText(FText::FromString(FormattedString));
 	}
@@ -34,7 +34,7 @@ void UTOHUDWidget::SetAlliesText(int32 TanksRemain)
 {
 	if (AlliesTanksText)
 	{
-		FString FormattedString = FString::Printf(TEXT("Allies remain: %d"), TanksRemain - 1); // subtracts player that control TankPawn
+		FString FormattedString = FString::Printf(TEXT("Tanks remain: %d"), TanksRemain);
 
 		AlliesTanksText->SetText(FText::FromString(FormattedString));
 	}

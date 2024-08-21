@@ -7,7 +7,6 @@
 
 class UButton;
 class UButtonLevelWidget;
-class UHorizontalBox;
 class UVerticalBox;
 
 UCLASS()
@@ -24,12 +23,6 @@ private:
 	TObjectPtr<UVerticalBox> VerticalBox;
 
 	TObjectPtr<UVerticalBox> CopyVerticalBox;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> UpperHorizontalBox;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> LowerHorizontalBox;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UButtonLevelWidget> ButtonLevelWidgetClass;

@@ -64,32 +64,48 @@ void UPageLevelWidget::CreateButtons(int32 StartIndex, int32 EndIndex)
 {
 	if (ButtonLevelWidgetClass)
 	{
+		ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+
+		UHorizontalBox* UpperHorizontalBox = NewObject<UHorizontalBox>(this);
+		UHorizontalBox* LowerHorizontalBox = NewObject<UHorizontalBox>(this);
+
 		for (int32 i = StartIndex; i < EndIndex; i++)
 		{
 			if (i >= StartIndex && i < EndIndex - 5 && UpperHorizontalBox) // subtract 5 because in every row 5 buttons
 			{
-					UButtonLevelWidget* LevelButton =
-						CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
-					LevelButton->InitializeButton(i + 1);
+				UButtonLevelWidget* LevelButton =
+					CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
+				LevelButton->InitializeButton(i + 1);
 
-					LevelButton->OnLevelSelected.AddDynamic(
-						this, &UPageLevelWidget::OnLevelSelected);
+				LevelButton->OnLevelSelected.AddDynamic(
+					this, &UPageLevelWidget::OnLevelSelected);
 
-					UpperHorizontalBox->AddChildToHorizontalBox(LevelButton);
-					VerticalBox->AddChildToVerticalBox(UpperHorizontalBox);
+				UpperHorizontalBox->AddChildToHorizontalBox(LevelButton);
+				VerticalBox->AddChildToVerticalBox(UpperHorizontalBox);
+
+				if (LevelSystem->Levels.Find(LevelButton->GetCurrentLevelIndex())->bIsUnlockedLevel)
+				{
+					LevelButton->SetColorAndOpacity(FColor::Green);
+				}
+		
 			}
 
 			else if (i >= EndIndex - 5 && i < EndIndex && LowerHorizontalBox) // subtract 5 because in every row 5 buttons
 			{
-					UButtonLevelWidget* LevelButton =
-						CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
-					LevelButton->InitializeButton(i + 1);
+				UButtonLevelWidget* LevelButton =
+					CreateWidget<UButtonLevelWidget>(this, ButtonLevelWidgetClass);
+				LevelButton->InitializeButton(i + 1);
 
-					LevelButton->OnLevelSelected.AddDynamic(
-						this, &UPageLevelWidget::OnLevelSelected);
+				LevelButton->OnLevelSelected.AddDynamic(
+					this, &UPageLevelWidget::OnLevelSelected);
 
-					LowerHorizontalBox->AddChildToHorizontalBox(LevelButton);
-					VerticalBox->AddChildToVerticalBox(LowerHorizontalBox);
+				LowerHorizontalBox->AddChildToHorizontalBox(LevelButton);
+				VerticalBox->AddChildToVerticalBox(LowerHorizontalBox);
+
+				if (LevelSystem->Levels.Find(LevelButton->GetCurrentLevelIndex())->bIsUnlockedLevel)
+				{
+					LevelButton->SetColorAndOpacity(FColor::Green);
+				}
 			}
 		}
 	}
@@ -100,10 +116,9 @@ void UPageLevelWidget::UpdatePageButtons()
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 
 	int32 StartIndex = CurrentPage * 10;
-	int32 EndIndex = FMath::Min(StartIndex + 10, LevelSystem->Levels.Num());
+	int32 EndIndex = FMath::Min(StartIndex + 10, LevelSystem->GetNumberLevels());
 
-	UpperHorizontalBox->ClearChildren();
-	LowerHorizontalBox->ClearChildren();
+	VerticalBox->ClearChildren();
 
 	VerticalBox = CopyVerticalBox;
 

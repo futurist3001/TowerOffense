@@ -88,7 +88,7 @@ void ATOPlayerController::DestroyPreparationWidget()
 		{
 			UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
 
-			PreparationWidget->RemoveFromViewport();
+			PreparationWidget->RemoveFromParent();
 			PreparationWidget = nullptr;
 		}
 	}
