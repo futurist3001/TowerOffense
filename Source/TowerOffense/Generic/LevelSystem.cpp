@@ -52,3 +52,12 @@ void ULevelSystem::OpenNextLevel(const UObject* WorldContextObject, int32 NextLe
 		}
 	}
 }
+
+void ULevelSystem::ResetLevelAccess()
+{
+	for (auto& Level : Levels)
+	{
+		Level.Value.CurrentLevel == 1 ? Level.Value.bIsUnlockedLevel = true :
+			Level.Value.bIsUnlockedLevel = false;
+	}
+}

@@ -48,6 +48,9 @@ public:
 	UFUNCTION()
 	void OpenNextLevel(const UObject* WorldContextObject, int32 NextLevelIndex);
 
+	UFUNCTION()
+	void ResetLevelAccess();
+
 	int32 GetNumberLevels() const
 	{ 
 		return NumberLevels;

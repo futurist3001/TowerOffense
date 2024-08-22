@@ -9,7 +9,6 @@ class UButton;
 class UOverlay;
 class UTextBlock;
 
-
 UCLASS()
 class TOWEROFFENSE_API UTOMainMenuWidget : public UUserWidget
 {
@@ -24,6 +23,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> LevelButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> ResetLevelAccessButton;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> QuitGameButton;
