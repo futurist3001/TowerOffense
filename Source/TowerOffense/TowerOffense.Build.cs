@@ -8,7 +8,8 @@ public class TowerOffense : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "GeometryCollectionEngine", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
+			"EnhancedInput", "UMG", "GeometryCollectionEngine", "Niagara", "Json", "JsonUtilities"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

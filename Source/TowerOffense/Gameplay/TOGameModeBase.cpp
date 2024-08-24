@@ -107,6 +107,7 @@ void ATOGameModeBase::Win()
 
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
 	LevelSystem->OpenNextLevel(GetWorld(), LevelSystem->ActualNextLevel);
+	LevelSystem->SaveLevelState();
 }
 
 void ATOGameModeBase::Lose()

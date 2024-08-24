@@ -51,6 +51,9 @@ public:
 	UFUNCTION()
 	void ResetLevelAccess();
 
+	void SaveLevelState();
+	void LoadLevelState();
+
 	int32 GetNumberLevels() const
 	{ 
 		return NumberLevels;
