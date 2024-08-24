@@ -17,7 +17,9 @@ ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 
 void ATOGameModeBase::Restart()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
+	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+	LevelSystem->OpenRelativeLevel(GetWorld(), LevelSystem->ActualCurrentLevel);
+
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 
 	GamePhase = EGamePhase::Playing;

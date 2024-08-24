@@ -13,7 +13,8 @@ ATOMMGameModeBase::ATOMMGameModeBase(const FObjectInitializer& ObjectInitializer
 
 void ATOMMGameModeBase::StartGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), MapName, true);
+	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
+	LevelSystem->OpenRelativeLevel(GetWorld(), 1);
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
 }
 

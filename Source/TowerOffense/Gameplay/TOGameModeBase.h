@@ -43,9 +43,6 @@ public:
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName MapName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName MainMenuMapName;
 
 	UPROPERTY(BlueprintReadOnly)
