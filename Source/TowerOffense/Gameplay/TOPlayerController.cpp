@@ -35,15 +35,9 @@ void ATOPlayerController::BeginPlay()
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
 
-	if (HUDWidget)
+	if (auto* TankPawn = GetPawn<ATankPawn>(); TankPawn && HUDWidget)
 	{
-		if (APawn* ControllerPawn = GetPawn())
-		{
-			if (ATankPawn* TankPawn = Cast<ATankPawn>(ControllerPawn))
-			{
-				TankPawn->HealthComponent->HealthChanged.AddDynamic(this, &ATOPlayerController::UpdateHUDHealth);
-			}
-		}
+		TankPawn->HealthComponent->HealthChanged.AddDynamic(this, &ATOPlayerController::UpdateHUDHealth);
 	}
 }
 
@@ -124,17 +118,14 @@ void ATOPlayerController::UpdateHUDEnergy()
 
 void ATOPlayerController::UpdateHUDHealth(AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
 {
-	if (HUDWidget)
+	if (HUDWidget && HealthKeeper)
 	{
-		if (HealthKeeper)
-		{
-			HUDWidget->SetHealth(
-				ParameterHealthComponent->Health, ParameterHealthComponent->DefaultHealth);
+		HUDWidget->SetHealth(
+			ParameterHealthComponent->Health, ParameterHealthComponent->DefaultHealth);
 
-			if (HUDWidget->HealthBar->GetVisibility() != ESlateVisibility::Visible)
-			{
-				HUDWidget->HealthBar->SetVisibility(ESlateVisibility::Visible);
-			}
+		if (HUDWidget->HealthBar->GetVisibility() != ESlateVisibility::Visible)
+		{
+			HUDWidget->HealthBar->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

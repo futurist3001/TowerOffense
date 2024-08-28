@@ -83,7 +83,7 @@ void UPageLevelWidget::CreateButtons(int32 StartIndex, int32 EndIndex)
 				UpperHorizontalBox->AddChildToHorizontalBox(LevelButton);
 				VerticalBox->AddChildToVerticalBox(UpperHorizontalBox);
 
-				if (LevelSystem->Levels.Find(LevelButton->GetCurrentLevelIndex())->bIsUnlockedLevel)
+				if (LevelSystem->Levels[LevelButton->GetCurrentLevelIndex() - 1] == true) // we check which level is unlocked and highlight it with relative color
 				{
 					LevelButton->SetColorAndOpacity(FColor::Green);
 				}
@@ -102,7 +102,7 @@ void UPageLevelWidget::CreateButtons(int32 StartIndex, int32 EndIndex)
 				LowerHorizontalBox->AddChildToHorizontalBox(LevelButton);
 				VerticalBox->AddChildToVerticalBox(LowerHorizontalBox);
 
-				if (LevelSystem->Levels.Find(LevelButton->GetCurrentLevelIndex())->bIsUnlockedLevel)
+				if (LevelSystem->Levels[LevelButton->GetCurrentLevelIndex() - 1] == true) // we check which level is unlocked and highlight it with relative color
 				{
 					LevelButton->SetColorAndOpacity(FColor::Green);
 				}

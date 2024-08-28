@@ -108,7 +108,7 @@ void ATOGameModeBase::Win()
 	SetEndGameState(EGamePhase::Win);
 
 	ULevelSystem* LevelSystem = GEngine->GetEngineSubsystem<ULevelSystem>();
-	LevelSystem->OpenNextLevel(GetWorld(), LevelSystem->ActualNextLevel);
+	LevelSystem->OpenNextLevel(GetWorld(), LevelSystem->ActualCurrentLevel + 1);
 	LevelSystem->SaveLevelState();
 }
 

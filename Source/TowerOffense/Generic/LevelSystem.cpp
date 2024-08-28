@@ -12,58 +12,40 @@ void ULevelSystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	if (Levels.Num() == 0)
 	{
-		for (int i = 1; i <= NumberLevels; ++i)
+		for (int i = 0; i < NumberLevels; ++i)
 		{
-			FLevelData LevelData;
-
-			i == 1 ? LevelData.PreviousLevel = i : LevelData.PreviousLevel = i - 1;
-			LevelData.CurrentLevel = i;
-			i == NumberLevels ? LevelData.NextLevel = i : LevelData.NextLevel = i + 1;
-			i == 1 ? LevelData.bIsUnlockedLevel = true : LevelData.bIsUnlockedLevel = false;
-
-			Levels.Add(i, LevelData);
+			i == 0 ? Levels.Add(true) : Levels.Add(false);
 		}
 	}
-}
-
-void ULevelSystem::Deinitialize()
-{
-	Super::Deinitialize();
 }
 
 void ULevelSystem::OpenRelativeLevel(const UObject* WorldContextObject, int32 LevelIndex)
 {
 	for (const auto& Level : Levels)
 	{
-		if (Level.Key == LevelIndex && Level.Value.bIsUnlockedLevel)
+		if (Levels.IsValidIndex(LevelIndex - 1) && Levels[LevelIndex - 1] == true)
 		{
-			FString LevelName = FString::Printf(TEXT("Level_%d"), Level.Value.CurrentLevel);
+			FString LevelName = FString::Printf(TEXT("Level_%d"), LevelIndex);
 			UGameplayStatics::OpenLevel(WorldContextObject, FName(*LevelName), true);
 
-			ActualPreviousLevel = Level.Value.PreviousLevel;
-			ActualCurrentLevel = Level.Value.CurrentLevel;
-			ActualNextLevel = Level.Value.NextLevel;
+			ActualCurrentLevel = LevelIndex;
 		}
 	}
 }
 
 void ULevelSystem::OpenNextLevel(const UObject* WorldContextObject, int32 NextLevelIndex)
 {
-	for (auto& Level : Levels)
+	if (Levels.IsValidIndex(NextLevelIndex - 1))
 	{
-		if (Level.Value.CurrentLevel == NextLevelIndex)
-		{
-			Level.Value.bIsUnlockedLevel = true;
-		}
+		Levels[NextLevelIndex - 1] = true;
 	}
 }
 
 void ULevelSystem::ResetLevelAccess()
 {
-	for (auto& Level : Levels)
+	for (int i = 0; i < Levels.Num(); ++i)
 	{
-		Level.Value.CurrentLevel == 1 ? Level.Value.bIsUnlockedLevel = true :
-			Level.Value.bIsUnlockedLevel = false;
+		i == 0 ? Levels[i] = true : Levels[i] = false;
 	}
 
 	SaveLevelState();
@@ -77,10 +59,7 @@ void ULevelSystem::SaveLevelState()
 	for (const auto& Level : Levels)
 	{
 		TSharedPtr<FJsonObject> JsonLevel = MakeShareable(new FJsonObject);
-		JsonLevel->SetNumberField(TEXT("PreviousLevel"), Level.Value.PreviousLevel);
-		JsonLevel->SetNumberField(TEXT("CurrentLevel"), Level.Value.CurrentLevel);
-		JsonLevel->SetNumberField(TEXT("NextLevel"), Level.Value.NextLevel);
-		JsonLevel->SetBoolField(TEXT("bIsUnlockedLevel"), Level.Value.bIsUnlockedLevel);
+		JsonLevel->SetBoolField(TEXT("bIsUnlockedLevel"), Level);
 
 		TSharedPtr<FJsonValue> JsonValue = MakeShareable(new FJsonValueObject(JsonLevel));
 		JsonLevelsArray.Add(JsonValue);
@@ -114,14 +93,9 @@ void ULevelSystem::LoadLevelState()
 			for (const TSharedPtr<FJsonValue>& JsonValue : *JsonLevelsArray)
 			{
 				TSharedPtr<FJsonObject> JsonLevel = JsonValue->AsObject();
+				bool IsUnlockedLevel = JsonLevel->GetBoolField(TEXT("bIsUnlockedLevel"));
 
-				FLevelData LevelData;
-				LevelData.PreviousLevel = JsonLevel->GetIntegerField(TEXT("PreviousLevel"));
-				LevelData.CurrentLevel = JsonLevel->GetIntegerField(TEXT("CurrentLevel"));
-				LevelData.NextLevel = JsonLevel->GetIntegerField(TEXT("NextLevel"));
-				LevelData.bIsUnlockedLevel = JsonLevel->GetBoolField(TEXT("bIsUnlockedLevel"));
-
-				Levels.Add(LevelData.CurrentLevel, LevelData);
+				Levels.Add(IsUnlockedLevel);
 			}
 		}
 	}
