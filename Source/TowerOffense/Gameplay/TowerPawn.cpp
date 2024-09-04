@@ -73,7 +73,7 @@ void ATowerPawn::RotateTurret()
 		Super::RotateTurret();
 
 		const FRotator NewRotator = UKismetMathLibrary::FindLookAtRotation(
-			GetActorLocation(), OverlapedActor[0]->GetActorLocation());
+			GetActorLocation(), OverlapedActor[0]->GetActorLocation()) - GetActorRotation();
 
 		TargetAngle = FRotator(0.f, NewRotator.Yaw - 90.f, 0.f);
 	}
