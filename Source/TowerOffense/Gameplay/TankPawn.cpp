@@ -2,6 +2,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
@@ -10,7 +11,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Landscape.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Projectile.h"
 #include "TOCameraShake.h"
 #include "TOPlayerController.h"
 
@@ -43,11 +46,13 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	MaxEnergy = 50.f;
 	CurrentEnergy = MaxEnergy;
 	OldShootTime = 10.f;
+	MaxFireHorizontalAngle = 15.f;
 
 	bIsStopMoving = false;
 	bReverseAttempt = false;
 	bPlayedTurretRotationSoundIteration = false;
 	bIsOldShoot = false;
+	bIsCollision = false;
 
 	MovementEffect = nullptr;
 }
@@ -87,11 +92,14 @@ void ATankPawn::MoveTriggeredInstance(const FInputActionInstance& Instance)
 {
 	bIsStopMoving = false;
 
-	CurrentTime = Instance.GetElapsedTime();
-	CurrentSpeed = FMath::Lerp(SpeedStopBraking, Speed, FMath::Clamp(CurrentTime / AccelerationDuration, 0.f, 1.f));
-	AddActorLocalOffset(MovementVector * CurrentSpeed, true, nullptr);
+	if (!bIsCollision)
+	{
+		CurrentTime = Instance.GetElapsedTime();
+		CurrentSpeed = FMath::Lerp(SpeedStopBraking, Speed, FMath::Clamp(CurrentTime / AccelerationDuration, 0.f, 1.f));
+		AddActorLocalOffset(MovementVector * CurrentSpeed, true, nullptr);
 
-	SpeedStopGas = CurrentSpeed;
+		SpeedStopGas = CurrentSpeed;
+	}
 }
 
 void ATankPawn::MoveCompleted()
@@ -102,11 +110,16 @@ void ATankPawn::MoveCompleted()
 
 	PreviousMovementVector = MovementVector;
 
-	if (MovementSound && MovementAudioComponent)
+	if (MovementSound && MovementAudioComponent && MovementAudioComponent->IsValidLowLevel())
 	{
 		MovementAudioComponent->Stop();
 		MovementAudioComponent->DestroyComponent();
 	}
+}
+
+void ATankPawn::StopCollision()
+{
+	bIsCollision = false;
 }
 
 void ATankPawn::Turn(const FInputActionValue& Value)
@@ -132,7 +145,7 @@ void ATankPawn::Fire()
 	{
 		Start = ProjectileSpawnPoint->GetComponentLocation();
 		End = Start + (FRotator(
-			TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Yaw + 90.f,
+			TurretMesh->GetComponentRotation().Pitch + PitchAimingRotator, TurretMesh->GetComponentRotation().Yaw + 90.f,
 			TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
 
 		Super::Fire();
@@ -147,6 +160,32 @@ void ATankPawn::Fire()
 		CurrentEnergy -= 10.f;
 
 		bIsOldShoot = false;
+	}
+}
+
+void ATankPawn::NotifyHit(
+	UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
+	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(
+		MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if (Other && !Other->IsA<AProjectile>() && !Other->IsA<ALandscape>())
+	{
+		MoveCompleted();
+
+		bIsCollision = true;
+		CurrentSpeed = 0.0f;
+		SpeedStopBraking = 0.0f;
+		SpeedStopGas = 0.0f;
+
+		MovementVector = FVector::ZeroVector;
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			TimerHandle, this, &ATankPawn::StopCollision, 0.5f, false);
+
+		AdjustTurretPosition();
 	}
 }
 
@@ -165,10 +204,34 @@ void ATankPawn::Rotate(const FInputActionValue& Value)
 	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f));
 }
 
+void ATankPawn::Aiming(const FInputActionValue& Value)
+{
+	float AimingValue = Value.Get<float>();
+	PitchAimingRotator += AimingValue;
+
+	if (PitchAimingRotator > MaxFireHorizontalAngle) // for limiting range of horizontal aiming
+	{
+		PitchAimingRotator = MaxFireHorizontalAngle;
+	}
+	else if (PitchAimingRotator < 0.f) // for limiting range of horizontal aiming
+	{
+		PitchAimingRotator = 0.f;
+	}
+}
+
+void ATankPawn::AdjustTurretPosition() // Attach camera to the current turret direction (must use this func manually diring the game)
+{
+	YawCameraRotator =
+		TurretMesh->GetComponentRotation().Yaw + 90.f;
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f));
+}
+
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	BaseMesh->SetWorldRotation(GetActorRotation() - FRotator(0.f, 90.f, 0.f));
 	YawCameraRotator = GetActorRotation().Yaw;
 
@@ -228,7 +291,7 @@ void ATankPawn::Tick(float DeltaTime)
 	GetWorld()->LineTraceSingleByChannel(
 		ShootingPoint, TurretMesh->GetComponentLocation(), 
 		TurretMesh->GetComponentLocation() + UKismetMathLibrary::GetForwardVector(
-			TurretMesh->GetComponentRotation() + FRotator(0.f, 90.f, 0.f)) * 100000.f,
+			TurretMesh->GetComponentRotation() + FRotator(PitchAimingRotator, 90.f, 0.f)) * 100000.f,
 		ECollisionChannel::ECC_Camera);
 
 	if (ShootingPoint.Location != FVector(0.f,0.f,0.f))
@@ -270,6 +333,7 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(TurnRightAction, ETriggerEvent::Triggered, this, &ATankPawn::Turn);
 		EnhancedInputComponent->BindAction(RotateTurretAction, ETriggerEvent::Triggered, this, &ATankPawn::Rotate);
+		EnhancedInputComponent->BindAction(AimingAction, ETriggerEvent::Triggered, this, &ATankPawn::Aiming);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ATankPawn::Fire);
 	}
 }

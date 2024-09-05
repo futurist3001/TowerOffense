@@ -40,6 +40,9 @@ protected:
 	TObjectPtr<UInputAction> RotateTurretAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> AimingAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
@@ -62,6 +65,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
 	float RechargeInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float MaxFireHorizontalAngle;
 
 	UPROPERTY(VisibleAnywhere, Category = "VFX")
 	TObjectPtr<USceneComponent> RightTankTrack;
@@ -91,11 +97,13 @@ private:
 	float YawCameraRotator;
 	float YawTurnRotator;
 	float CurrentTimeFire; // For calculating fire interval
+	float PitchAimingRotator; // For calculating aiming process
 	float RechargeTimeProjectile; // For calculating recharge projectile interval
 	uint8 bIsStopMoving : 1;
 	uint8 bReverseAttempt : 1;
 	uint8 bPlayedTurretRotationSoundIteration : 1;
 	uint8 bIsOldShoot : 1;
+	uint8 bIsCollision : 1;
 	FHitResult ShootingPoint;
 	UAudioComponent* MovementAudioComponent;
 	
@@ -124,11 +132,21 @@ protected:
 	virtual void RotateTurret() override;
 	virtual void Fire() override;
 
+	virtual void NotifyHit(
+		UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved,
+		FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
 	void MoveStarted();
 	void MoveTriggeredValue(const FInputActionValue& Value);
 	void MoveTriggeredInstance(const FInputActionInstance& Instance);
 	void MoveCompleted();
+	void StopCollision();
 
 	void Turn(const FInputActionValue& Value);
 	void Rotate(const FInputActionValue& Value);
+	void Aiming(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+	void AdjustTurretPosition();
 };
+
