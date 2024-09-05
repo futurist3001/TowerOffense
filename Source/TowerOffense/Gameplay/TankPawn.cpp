@@ -119,7 +119,11 @@ void ATankPawn::MoveCompleted()
 
 void ATankPawn::StopCollision()
 {
-	bIsCollision = false;
+	if (bIsStopMoving)
+	{
+		bIsCollision = false;
+		GetWorldTimerManager().ClearTimer(CollisionTimerHandle);
+	}
 }
 
 void ATankPawn::Turn(const FInputActionValue& Value)
@@ -181,9 +185,8 @@ void ATankPawn::NotifyHit(
 
 		MovementVector = FVector::ZeroVector;
 
-		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
-			TimerHandle, this, &ATankPawn::StopCollision, 0.5f, false);
+			CollisionTimerHandle, this, &ATankPawn::StopCollision, 0.2f, true);
 	}
 }
 

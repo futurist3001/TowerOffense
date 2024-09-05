@@ -88,6 +88,7 @@ protected:
 	TObjectPtr<USoundBase> MovementSound;
 
 private:
+	FTimerHandle CollisionTimerHandle; // For detect when collision ends
 	FVector MovementVector;
 	FVector PreviousMovementVector; // previous pressed button
 	float CurrentTime;
