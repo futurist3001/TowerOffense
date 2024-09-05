@@ -184,8 +184,6 @@ void ATankPawn::NotifyHit(
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
 			TimerHandle, this, &ATankPawn::StopCollision, 0.5f, false);
-
-		AdjustTurretPosition();
 	}
 }
 
