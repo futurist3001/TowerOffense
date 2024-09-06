@@ -187,6 +187,9 @@ void ATankPawn::NotifyHit(
 
 		GetWorld()->GetTimerManager().SetTimer(
 			CollisionTimerHandle, this, &ATankPawn::StopCollision, 0.2f, true);
+
+		GetWorldTimerManager().SetTimer(
+			AdjustingTurretPositionTimerHandle, this, &ATankPawn::AdjustTurretPosition, 0.001f, true);
 	}
 }
 
@@ -220,13 +223,37 @@ void ATankPawn::Aiming(const FInputActionValue& Value)
 	}
 }
 
-void ATankPawn::AdjustTurretPosition() // Attach camera to the current turret direction (must use this func manually diring the game)
+void ATankPawn::AdjustTurretPosition()
 {
-	YawCameraRotator =
-		TurretMesh->GetComponentRotation().Yaw + 90.f;
-
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f));
+	YawCameraRotator = ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw;
+
+	if (PlayerController->GetControlRotation() != ProjectileSpawnPoint->GetForwardVector().Rotation())
+	{
+		PlayerController->SetControlRotation(ProjectileSpawnPoint->GetForwardVector().Rotation());
+	}
+	
+	if(PlayerController->GetControlRotation() == ProjectileSpawnPoint->GetForwardVector().Rotation() && !bIsRotate)
+	{
+		GetWorldTimerManager().SetTimer(
+			ClearAdjustingTurretPositionTimerHandle, this,
+			&ATankPawn::ClearAdjustingTurretPositionTimer, 0.001f, false);
+	}
+}
+
+void ATankPawn::ClearAdjustingTurretPositionTimer()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (FMath::Abs(
+		PlayerController->GetControlRotation().Yaw - ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw) < 5.0f && !bIsRotate)
+	{
+		GetWorldTimerManager().ClearTimer(
+			AdjustingTurretPositionTimerHandle);
+
+		GetWorldTimerManager().ClearTimer(
+			ClearAdjustingTurretPositionTimerHandle);
+	}
 }
 
 void ATankPawn::BeginPlay()

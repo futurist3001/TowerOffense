@@ -88,6 +88,8 @@ protected:
 	TObjectPtr<USoundBase> MovementSound;
 
 private:
+	FTimerHandle AdjustingTurretPositionTimerHandle;
+	FTimerHandle ClearAdjustingTurretPositionTimerHandle;
 	FTimerHandle CollisionTimerHandle; // For detect when collision ends
 	FVector MovementVector;
 	FVector PreviousMovementVector; // previous pressed button
@@ -149,5 +151,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void AdjustTurretPosition();
+
+	void ClearAdjustingTurretPositionTimer();
 };
 
