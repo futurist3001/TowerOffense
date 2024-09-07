@@ -233,7 +233,7 @@ void ATankPawn::AdjustTurretPosition()
 		PlayerController->SetControlRotation(ProjectileSpawnPoint->GetForwardVector().Rotation());
 	}
 	
-	if(PlayerController->GetControlRotation() == ProjectileSpawnPoint->GetForwardVector().Rotation() && !bIsRotate)
+	if(PlayerController->GetControlRotation() == ProjectileSpawnPoint->GetForwardVector().Rotation())
 	{
 		GetWorldTimerManager().SetTimer(
 			ClearAdjustingTurretPositionTimerHandle, this,
@@ -245,8 +245,7 @@ void ATankPawn::ClearAdjustingTurretPositionTimer()
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 
-	if (FMath::Abs(
-		PlayerController->GetControlRotation().Yaw - ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw) < 5.0f && !bIsRotate)
+	if (!bIsRotate)
 	{
 		GetWorldTimerManager().ClearTimer(
 			AdjustingTurretPositionTimerHandle);
@@ -317,16 +316,16 @@ void ATankPawn::Tick(float DeltaTime)
 	}
 
 	GetWorld()->LineTraceSingleByChannel(
-		ShootingPoint, TurretMesh->GetComponentLocation(), 
-		TurretMesh->GetComponentLocation() + UKismetMathLibrary::GetForwardVector(
-			TurretMesh->GetComponentRotation() + FRotator(PitchAimingRotator, 90.f, 0.f)) * 100000.f,
+		ShootingPoint, ProjectileSpawnPoint->GetComponentLocation(), 
+		UKismetMathLibrary::GetForwardVector(ProjectileSpawnPoint->GetForwardVector().Rotation()
+			+ FRotator(PitchAimingRotator, 0.0f, 0.0f)) * 100000.f,
 		ECollisionChannel::ECC_Camera);
 
 	if (ShootingPoint.Location != FVector(0.f,0.f,0.f))
 	{
 		DrawDebugSphere(
-			GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z + 150.f),
-			35, 15, FColor::Red, false, 0.03f, 0, 0.5);
+			GetWorld(), FVector(ShootingPoint.Location.X, ShootingPoint.Location.Y, ShootingPoint.Location.Z),
+			35, 15, FColor::Blue, false, 0.03f, 0, 0.5);
 	}
 
 	CurrentTimeFire += DeltaTime;
