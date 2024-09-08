@@ -88,7 +88,9 @@ protected:
 	TObjectPtr<USoundBase> MovementSound;
 
 private:
+	FTimerHandle ReloadLevelTimerHandle;
 	FTimerHandle AdjustingTurretPositionTimerHandle;
+	FTimerHandle RotComplAdjustingTurretPositionTimerHandle;
 	FTimerHandle ClearAdjustingTurretPositionTimerHandle;
 	FTimerHandle CollisionTimerHandle; // For detect when collision ends
 	FVector MovementVector;
@@ -107,6 +109,7 @@ private:
 	uint8 bPlayedTurretRotationSoundIteration : 1;
 	uint8 bIsOldShoot : 1;
 	uint8 bIsCollision : 1;
+	uint8 bIsUpsideDown : 1;
 	FHitResult ShootingPoint;
 	UAudioComponent* MovementAudioComponent;
 	
@@ -147,11 +150,11 @@ protected:
 
 	void Turn(const FInputActionValue& Value);
 	void Rotate(const FInputActionValue& Value);
+	void RotateCompleted();
 	void Aiming(const FInputActionValue& Value);
 
-	UFUNCTION(BlueprintCallable)
 	void AdjustTurretPosition();
-
 	void ClearAdjustingTurretPositionTimer();
+	void UpsideDownTank();
 };
 

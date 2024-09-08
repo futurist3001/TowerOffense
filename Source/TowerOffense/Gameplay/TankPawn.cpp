@@ -15,6 +15,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Projectile.h"
 #include "TOCameraShake.h"
+#include "TOGameModeBase.h"
 #include "TOPlayerController.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
@@ -53,6 +54,7 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	bPlayedTurretRotationSoundIteration = false;
 	bIsOldShoot = false;
 	bIsCollision = false;
+	bIsUpsideDown = false;
 
 	MovementEffect = nullptr;
 }
@@ -86,6 +88,8 @@ void ATankPawn::MoveTriggeredValue(const FInputActionValue& Value)
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(), MovementEffect, LeftTankTrack->GetComponentLocation());
 	}
+
+	UpsideDownTank();
 }
 
 void ATankPawn::MoveTriggeredInstance(const FInputActionInstance& Instance)
@@ -149,8 +153,9 @@ void ATankPawn::Fire()
 	{
 		Start = ProjectileSpawnPoint->GetComponentLocation();
 		End = Start + (FRotator(
-			TurretMesh->GetComponentRotation().Pitch + PitchAimingRotator, TurretMesh->GetComponentRotation().Yaw + 90.f,
-			TurretMesh->GetComponentRotation().Roll)).GetNormalized().Vector() * 1000.f;
+			ProjectileSpawnPoint->GetForwardVector().Rotation().Pitch + PitchAimingRotator,
+			ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw,
+			ProjectileSpawnPoint->GetForwardVector().Rotation().Roll)).GetNormalized().Vector() * 1000.f;
 
 		Super::Fire();
 
@@ -208,6 +213,12 @@ void ATankPawn::Rotate(const FInputActionValue& Value)
 	PlayerController->SetControlRotation(FRotator(0.f, YawCameraRotator, 0.f));
 }
 
+void ATankPawn::RotateCompleted()
+{
+	GetWorldTimerManager().SetTimer(RotComplAdjustingTurretPositionTimerHandle, this,
+		&ATankPawn::AdjustTurretPosition, 3.0f, true);
+}
+
 void ATankPawn::Aiming(const FInputActionValue& Value)
 {
 	float AimingValue = Value.Get<float>();
@@ -225,19 +236,22 @@ void ATankPawn::Aiming(const FInputActionValue& Value)
 
 void ATankPawn::AdjustTurretPosition()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	YawCameraRotator = ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw;
+	if (!bIsRotate)
+	{
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 
-	if (PlayerController->GetControlRotation() != ProjectileSpawnPoint->GetForwardVector().Rotation())
-	{
-		PlayerController->SetControlRotation(ProjectileSpawnPoint->GetForwardVector().Rotation());
-	}
-	
-	if(PlayerController->GetControlRotation() == ProjectileSpawnPoint->GetForwardVector().Rotation())
-	{
-		GetWorldTimerManager().SetTimer(
-			ClearAdjustingTurretPositionTimerHandle, this,
-			&ATankPawn::ClearAdjustingTurretPositionTimer, 0.001f, false);
+		if (PlayerController->GetControlRotation() != ProjectileSpawnPoint->GetForwardVector().Rotation())
+		{
+			PlayerController->SetControlRotation(ProjectileSpawnPoint->GetForwardVector().Rotation());
+			YawCameraRotator = ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw;
+		}
+
+		if (PlayerController->GetControlRotation() == ProjectileSpawnPoint->GetForwardVector().Rotation())
+		{
+			GetWorldTimerManager().SetTimer(
+				ClearAdjustingTurretPositionTimerHandle, this,
+				&ATankPawn::ClearAdjustingTurretPositionTimer, 0.001f, false);
+		}
 	}
 }
 
@@ -247,11 +261,35 @@ void ATankPawn::ClearAdjustingTurretPositionTimer()
 
 	if (!bIsRotate)
 	{
-		GetWorldTimerManager().ClearTimer(
-			AdjustingTurretPositionTimerHandle);
+		if (AdjustingTurretPositionTimerHandle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(
+				AdjustingTurretPositionTimerHandle);
+		}
 
-		GetWorldTimerManager().ClearTimer(
-			ClearAdjustingTurretPositionTimerHandle);
+		if (ClearAdjustingTurretPositionTimerHandle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(
+				ClearAdjustingTurretPositionTimerHandle);
+		}
+
+		if (RotComplAdjustingTurretPositionTimerHandle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(
+				RotComplAdjustingTurretPositionTimerHandle);
+		}
+	}
+}
+
+void ATankPawn::UpsideDownTank()
+{
+	if (ProjectileSpawnPoint->GetComponentLocation().Z < RightTankTrack->GetComponentLocation().Z && !bIsUpsideDown)
+	{
+		ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
+		GetWorldTimerManager().SetTimer(
+			ReloadLevelTimerHandle, GameModeBase, &ATOGameModeBase::Restart, 3.0f, false);
+
+		bIsUpsideDown = true;
 	}
 }
 
@@ -345,12 +383,6 @@ void ATankPawn::Tick(float DeltaTime)
 		CurrentEnergy += 10.f;
 		RechargeTimeProjectile = 0.0f;
 	}
-
-	UKismetSystemLibrary::PrintString(
-		GetWorld(), TurretMesh->GetComponentRotation().ToString(), true, false, FColor::Blue, DeltaTime);
-
-	UKismetSystemLibrary::PrintString(
-		GetWorld(), TurretMesh->GetRelativeRotation().ToString(), true, false, FColor::Yellow, DeltaTime);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -366,6 +398,7 @@ void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 		EnhancedInputComponent->BindAction(TurnRightAction, ETriggerEvent::Triggered, this, &ATankPawn::Turn);
 		EnhancedInputComponent->BindAction(RotateTurretAction, ETriggerEvent::Triggered, this, &ATankPawn::Rotate);
+		EnhancedInputComponent->BindAction(RotateTurretAction, ETriggerEvent::Completed, this, &ATankPawn::RotateCompleted);
 		EnhancedInputComponent->BindAction(AimingAction, ETriggerEvent::Triggered, this, &ATankPawn::Aiming);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ATankPawn::Fire);
 	}
