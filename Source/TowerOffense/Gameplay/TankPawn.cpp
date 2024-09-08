@@ -189,7 +189,7 @@ void ATankPawn::NotifyHit(
 			CollisionTimerHandle, this, &ATankPawn::StopCollision, 0.2f, true);
 
 		GetWorldTimerManager().SetTimer(
-			AdjustingTurretPositionTimerHandle, this, &ATankPawn::AdjustTurretPosition, 0.001f, true);
+			AdjustingTurretPositionTimerHandle, this, &ATankPawn::AdjustTurretPosition, 1.0f, true);
 	}
 }
 
@@ -345,6 +345,12 @@ void ATankPawn::Tick(float DeltaTime)
 		CurrentEnergy += 10.f;
 		RechargeTimeProjectile = 0.0f;
 	}
+
+	UKismetSystemLibrary::PrintString(
+		GetWorld(), TurretMesh->GetComponentRotation().ToString(), true, false, FColor::Blue, DeltaTime);
+
+	UKismetSystemLibrary::PrintString(
+		GetWorld(), TurretMesh->GetRelativeRotation().ToString(), true, false, FColor::Yellow, DeltaTime);
 }
 
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
