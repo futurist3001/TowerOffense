@@ -28,7 +28,7 @@ AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.1f;
 
-	Damage = 10;
+	Damage = 10.0f;
 	DamageEffect = nullptr;
 	ExplosionSound = nullptr;
 }

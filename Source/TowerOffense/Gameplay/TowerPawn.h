@@ -19,6 +19,9 @@ protected:
 	UPROPERTY(Transient)
 	TArray<AActor*> OverlapedActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	float PeriodFire;
+
 private:
 	FTimerHandle FireTimerHandle;
 	uint8 bPlayedTurretRotationSoundIteration : 1;

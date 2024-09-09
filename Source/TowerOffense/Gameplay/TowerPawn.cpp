@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Projectile.h"
+#include "TOGameModeBase.h"
 
 ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -15,6 +16,8 @@ ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("ShootingZone"));
 	SphereComponent->SetupAttachment(RootComponent);
+
+	PeriodFire = 2.0f;
 }
 
 void ATowerPawn::BeginPlay()
@@ -59,16 +62,13 @@ void ATowerPawn::Tick(float DeltaTime)
 			bPlayedTurretRotationSoundIteration = false;
 		}
 	}
-
-	DrawDebugLine(
-		GetWorld(), ProjectileSpawnPoint->GetComponentLocation(),
-		ProjectileSpawnPoint->GetComponentLocation() + ProjectileSpawnPoint->GetForwardVector() * 100.f,
-		FColor::Black, false, 1.f);
 }
 
 void ATowerPawn::RotateTurret()
 {
-	if (!IsTheSameTeam(OverlapedActor[0]))
+	ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
+
+	if (!IsTheSameTeam(OverlapedActor[0]) && GameModeBase->GetGamePhase() == EGamePhase::Playing)
 	{
 		Super::RotateTurret();
 
@@ -81,7 +81,9 @@ void ATowerPawn::RotateTurret()
 
 void ATowerPawn::Fire()
 {
-	if (IsLookToTank() && !IsTheSameTeam(OverlapedActor[0]))
+	ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
+
+	if (IsLookToTank() && !IsTheSameTeam(OverlapedActor[0]) && GameModeBase->GetGamePhase() == EGamePhase::Playing)
 	{
 		Start = ProjectileSpawnPoint->GetComponentLocation();
 		End = OverlapedActor[0]->GetActorLocation();
@@ -97,7 +99,10 @@ bool ATowerPawn::IsLookToTank()
 	FVector StartPointLook = ProjectileSpawnPoint->GetComponentLocation();
 	FVector EndPointLook = StartPointLook + ProjectileSpawnPoint->GetForwardVector() * 5000.f;
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPointLook, EndPointLook, ECollisionChannel::ECC_Visibility))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult,
+		FVector(StartPointLook.X, StartPointLook.Y, OverlapedActor[0]->GetActorLocation().Z),
+		FVector(EndPointLook.X, EndPointLook.Y, OverlapedActor[0]->GetActorLocation().Z),
+		ECollisionChannel::ECC_Visibility))
 	{
 		if (HitResult.GetActor()->IsA<ATankPawn>())
 		{
@@ -132,7 +137,7 @@ void ATowerPawn::OnBeginOverlap(
 		{
 			OverlapedActor.Add(OtherActor);
 
-			GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ATowerPawn::Fire, 2.f, true);
+			GetWorldTimerManager().SetTimer(FireTimerHandle, this, &ATowerPawn::Fire, PeriodFire, true);
 		}
 	}
 }

@@ -4,14 +4,13 @@ UTOHealthComponent::UTOHealthComponent(const FObjectInitializer& ObjectInitializ
 : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
-	DefaultHealth = 100.f;
-	Health = DefaultHealth;
 }
 
 void UTOHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Health = DefaultHealth;
 
 	AActor* Owner = GetOwner();
 
@@ -30,7 +29,7 @@ void UTOHealthComponent::TakeDamage(
 		return;
 	}
 
-	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
+ 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
 	
 	HealthChanged.Broadcast(GetOwner(), this);
 }
