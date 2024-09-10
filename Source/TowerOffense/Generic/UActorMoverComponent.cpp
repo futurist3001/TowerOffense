@@ -11,6 +11,7 @@ UUActorMoverComponent::UUActorMoverComponent(const FObjectInitializer& ObjectIni
 	DistanceToMove = 0;
 	CurDistance = 0;
 	InterpFunc = EInterpolation::InterpSinInOut;
+	bIsPlayed = false;
 }
 
 void UUActorMoverComponent::BeginPlay()
@@ -28,9 +29,7 @@ void UUActorMoverComponent::TickComponent(
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
-
-	if (GameModeBase && GameModeBase->GetGamePhase() == EGamePhase::Playing)
+	if (bIsPlayed)
 	{
 		const float Alpha = CurDistance / DistanceToMove;
 		CurDistance += DeltaTime * Speed * Reverse;

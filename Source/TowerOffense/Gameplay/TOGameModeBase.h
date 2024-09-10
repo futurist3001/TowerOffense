@@ -51,6 +51,7 @@ protected:
 private:
 	int32 NumberTowers;
 	int32 NumberTanks;
+	uint8 bIsGameStarted : 1;
 
 public:
 	ATOGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -92,6 +93,7 @@ protected:
 
 	void InitPlayData();
 
+	void GameStarted();
 	void Win();
 	void Lose();
 

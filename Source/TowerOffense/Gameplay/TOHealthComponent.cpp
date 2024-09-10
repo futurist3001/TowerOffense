@@ -4,6 +4,8 @@ UTOHealthComponent::UTOHealthComponent(const FObjectInitializer& ObjectInitializ
 : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	DefaultHealth = 100.0f;
 }
 
 void UTOHealthComponent::BeginPlay()

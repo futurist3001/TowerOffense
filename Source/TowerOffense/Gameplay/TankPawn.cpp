@@ -15,7 +15,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Projectile.h"
 #include "TOCameraShake.h"
-#include "TOGameModeBase.h"
 #include "TOPlayerController.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)

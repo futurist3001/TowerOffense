@@ -39,8 +39,15 @@ private:
 	float CurDistance;
 	float Reverse;
 
+	uint8 bIsPlayed : 1;
+
 public:
 	UUActorMoverComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	FORCEINLINE void SetPlayState(bool IsPlayed)
+	{
+		bIsPlayed = IsPlayed;
+	}
 
 protected:
 	virtual void BeginPlay() override;

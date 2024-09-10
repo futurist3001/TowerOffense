@@ -5,6 +5,7 @@
 #include "TankPawn.h"
 #include "TowerPawn.h"
 #include "TowerOffense/Generic/LevelSystem.h"
+#include "TowerOffense/Generic/UActorMoverComponent.h"
 
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -56,6 +57,7 @@ FText ATOGameModeBase::GetPreparationText()
 	else if (HandleTime > 3.f)
 	{
 		GamePhase = EGamePhase::Playing;
+		GameStarted();
 
 		return FText::FromString(TEXT("Play!"));
 	}
@@ -101,6 +103,35 @@ void ATOGameModeBase::InitPlayData()
 	INIT_PLAY_DATA(ATowerPawn::StaticClass(), NumberTowers, &ATOGameModeBase::TowerDestroyed);
 	INIT_PLAY_DATA(ATankPawn::StaticClass(), NumberTanks, &ATOGameModeBase::TankDestroyed);
 #undef INIT_PLAY_DATA
+}
+
+void ATOGameModeBase::GameStarted()
+{
+	if (GamePhase == EGamePhase::Playing)
+	{
+		TArray<AActor*> Towers;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATowerPawn::StaticClass(), Towers);
+
+		for (AActor* Tower : Towers)
+		{
+			ATowerPawn* TowerPawn = Cast<ATowerPawn>(Tower);
+			TowerPawn->SetPlayState(true);
+		}
+
+		TArray<AActor*> AllActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
+
+		for (AActor* Actor : AllActors)
+		{
+			UUActorMoverComponent* ActorMoverComponent = 
+				Actor->FindComponentByClass<UUActorMoverComponent>();
+
+			if (ActorMoverComponent)
+			{
+				ActorMoverComponent->SetPlayState(true);
+			}
+		}
+	}
 }
 
 void ATOGameModeBase::Win()

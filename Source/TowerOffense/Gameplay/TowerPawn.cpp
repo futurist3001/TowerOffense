@@ -7,7 +7,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Projectile.h"
-#include "TOGameModeBase.h"
 
 ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -18,6 +17,7 @@ ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 	SphereComponent->SetupAttachment(RootComponent);
 
 	PeriodFire = 2.0f;
+	bIsPlaying = false;
 }
 
 void ATowerPawn::BeginPlay()
@@ -66,9 +66,7 @@ void ATowerPawn::Tick(float DeltaTime)
 
 void ATowerPawn::RotateTurret()
 {
-	ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
-
-	if (!IsTheSameTeam(OverlapedActor[0]) && GameModeBase->GetGamePhase() == EGamePhase::Playing)
+	if (!IsTheSameTeam(OverlapedActor[0]) && bIsPlaying)
 	{
 		Super::RotateTurret();
 
@@ -81,9 +79,7 @@ void ATowerPawn::RotateTurret()
 
 void ATowerPawn::Fire()
 {
-	ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
-
-	if (IsLookToTank() && !IsTheSameTeam(OverlapedActor[0]) && GameModeBase->GetGamePhase() == EGamePhase::Playing)
+	if (IsLookToTank() && !IsTheSameTeam(OverlapedActor[0]) && bIsPlaying)
 	{
 		Start = ProjectileSpawnPoint->GetComponentLocation();
 		End = OverlapedActor[0]->GetActorLocation();

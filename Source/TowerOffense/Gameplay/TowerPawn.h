@@ -25,9 +25,16 @@ protected:
 private:
 	FTimerHandle FireTimerHandle;
 	uint8 bPlayedTurretRotationSoundIteration : 1;
+	uint8 bIsPlaying : 1;
 
 public:
 	ATowerPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+public:
+	FORCEINLINE void SetPlayState(bool IsPlaying)
+	{
+		bIsPlaying = IsPlaying;
+	}
 
 protected:
 	virtual void BeginPlay() override;
