@@ -25,9 +25,15 @@ protected:
 private:
 	float Timer;
 	float SplineProgress;
+	uint8 bIsPlayed : 1;
 
 public:
 	UMeshMoverAlongSplineComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	FORCEINLINE void SetPlayState(bool IsPlayed)
+	{
+		bIsPlayed = IsPlayed;
+	}
 
 protected:
 	virtual void TickComponent(

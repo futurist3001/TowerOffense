@@ -282,7 +282,8 @@ void ATankPawn::ClearAdjustingTurretPositionTimer()
 
 void ATankPawn::UpsideDownTank()
 {
-	if (ProjectileSpawnPoint->GetComponentLocation().Z < RightTankTrack->GetComponentLocation().Z && !bIsUpsideDown)
+	if ((ProjectileSpawnPoint->GetComponentLocation().Z < RightTankTrack->GetComponentLocation().Z
+		|| ProjectileSpawnPoint->GetComponentLocation().Z < LeftTankTrack->GetComponentLocation().Z) && !bIsUpsideDown)
 	{
 		ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 		GetWorldTimerManager().SetTimer(

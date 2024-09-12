@@ -96,8 +96,8 @@ bool ATowerPawn::IsLookToTank()
 	FVector EndPointLook = StartPointLook + ProjectileSpawnPoint->GetForwardVector() * 5000.f;
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,
-		FVector(StartPointLook.X, StartPointLook.Y, OverlapedActor[0]->GetActorLocation().Z),
-		FVector(EndPointLook.X, EndPointLook.Y, OverlapedActor[0]->GetActorLocation().Z),
+		FVector(StartPointLook.X, StartPointLook.Y, OverlapedActor[0]->GetActorLocation().Z + 150.f),
+		FVector(EndPointLook.X, EndPointLook.Y, OverlapedActor[0]->GetActorLocation().Z + 150.f),
 		ECollisionChannel::ECC_Visibility))
 	{
 		if (HitResult.GetActor()->IsA<ATankPawn>())

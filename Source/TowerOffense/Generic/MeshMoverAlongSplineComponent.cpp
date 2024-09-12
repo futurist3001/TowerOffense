@@ -8,6 +8,7 @@ UMeshMoverAlongSplineComponent::UMeshMoverAlongSplineComponent(const FObjectInit
 	PrimaryComponentTick.bCanEverTick = true;
 
 	Timer = 0;
+	bIsPlayed = false;
 }
 
 void UMeshMoverAlongSplineComponent::SetSpline(USplineComponent* InSpline)
@@ -26,7 +27,7 @@ void UMeshMoverAlongSplineComponent::TickComponent(
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (SplineComponent)
+	if (SplineComponent && bIsPlayed)
 	{
 		Timer += DeltaTime;
 

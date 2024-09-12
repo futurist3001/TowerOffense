@@ -6,6 +6,7 @@
 #include "TowerPawn.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 #include "TowerOffense/Generic/UActorMoverComponent.h"
+#include "TowerOffense/Generic/MeshMoverAlongSplineComponent.h"
 
 ATOGameModeBase::ATOGameModeBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -129,6 +130,14 @@ void ATOGameModeBase::GameStarted()
 			if (ActorMoverComponent)
 			{
 				ActorMoverComponent->SetPlayState(true);
+			}
+
+			UMeshMoverAlongSplineComponent* MeshMoverAlongSplineComponent =
+				Actor->FindComponentByClass<UMeshMoverAlongSplineComponent>();
+
+			if (MeshMoverAlongSplineComponent)
+			{
+				MeshMoverAlongSplineComponent->SetPlayState(true);
 			}
 		}
 	}
