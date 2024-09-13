@@ -29,6 +29,8 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	LeftTankTrack = CreateDefaultSubobject<USceneComponent>(TEXT("Left Tank Track"));
 	RightTankTrackRotation = CreateDefaultSubobject<USceneComponent>(TEXT("Right Tank Track Rotation"));
 	LeftTankTrackRotation = CreateDefaultSubobject<USceneComponent>(TEXT("Left Tank Track Rotation"));
+	TankTop = CreateDefaultSubobject<USceneComponent>(TEXT("Top of the tank"));
+	TankBottom = CreateDefaultSubobject<USceneComponent>(TEXT("Bottom of the tank"));
 
 	SpringArmComponent->SetupAttachment(RootComponent);
 	CameraComponent->SetupAttachment(SpringArmComponent);
@@ -37,6 +39,9 @@ ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 	LeftTankTrack->SetupAttachment(BaseMesh);
 	RightTankTrackRotation->SetupAttachment(BaseMesh);
 	LeftTankTrackRotation->SetupAttachment(BaseMesh);
+
+	TankTop->SetupAttachment(TurretMesh);
+	TankBottom->SetupAttachment(BaseMesh);
 
 	CurrentTime = 0.f;
 	CurrentSpeed = 0.f;
@@ -282,8 +287,7 @@ void ATankPawn::ClearAdjustingTurretPositionTimer()
 
 void ATankPawn::UpsideDownTank()
 {
-	if ((ProjectileSpawnPoint->GetComponentLocation().Z < RightTankTrack->GetComponentLocation().Z
-		|| ProjectileSpawnPoint->GetComponentLocation().Z < LeftTankTrack->GetComponentLocation().Z) && !bIsUpsideDown)
+	if (TankTop->GetComponentLocation().Z < TankBottom->GetComponentLocation().Z && !bIsUpsideDown)
 	{
 		ATOGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 		GetWorldTimerManager().SetTimer(

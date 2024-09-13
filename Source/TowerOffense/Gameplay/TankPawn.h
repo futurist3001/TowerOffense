@@ -81,6 +81,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "VFX")
 	TObjectPtr<USceneComponent> RightTankTrackRotation;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> TankTop;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> TankBottom;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	TObjectPtr<UNiagaraSystem> MovementEffect;
 
