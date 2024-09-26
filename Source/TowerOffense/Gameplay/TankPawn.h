@@ -163,4 +163,3 @@ protected:
 	void ClearAdjustingTurretPositionTimer();
 	void UpsideDownTank();
 };
-
