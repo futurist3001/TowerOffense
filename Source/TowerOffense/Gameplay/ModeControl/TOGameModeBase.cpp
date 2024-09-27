@@ -2,8 +2,8 @@
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "TankPawn.h"
-#include "TowerPawn.h"
+#include "TowerOffense/Gameplay/Pawn/TankPawn.h"
+#include "TowerOffense/Gameplay/Pawn/TowerPawn.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 #include "TowerOffense/Generic/UActorMoverComponent.h"
 #include "TowerOffense/Generic/MeshMoverAlongSplineComponent.h"

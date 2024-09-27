@@ -2,7 +2,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "TOGameModeBase.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
 
 void UTOHUDWidget::SetHealth(float CurrentHealth, float MaxHealth)
 {

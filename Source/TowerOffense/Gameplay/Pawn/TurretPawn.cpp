@@ -2,12 +2,12 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include"HealthTurretWidget.h"
+#include "TowerOffense/Gameplay/UI/HealthTurretWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Projectile.h"
-#include "TOCameraShake.h"
+#include "TowerOffense/Gameplay/Other/Projectile.h"
+#include "TowerOffense/Gameplay/Other/TOCameraShake.h"
 #include "TowerOffense/Generic/MyBlueprintFunctionLibrary.h"
 
 ATurretPawn::ATurretPawn(const FObjectInitializer& ObjectInitializer)
@@ -116,8 +116,6 @@ void ATurretPawn::BeginPlay()
 	Super::BeginPlay();
 
 	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::HealthCheckedDeath);
-	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::PrintCurrentHealth);
-	HealthComponent->HealthChanged.AddDynamic(this, &ATurretPawn::UpdateHealthBarComponent);
 
 	if (UHealthTurretWidget* HealthBarWidget = Cast<UHealthTurretWidget>(HealthWidgetComponent->GetWidget()))
 	{
@@ -182,7 +180,7 @@ void ATurretPawn::RotateTurret()
 
 void ATurretPawn::Fire()
 {
-	const FVector ShootDirection = (End - Start).GetSafeNormal();
+	ShootDirection = (End - Start).GetSafeNormal();
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = SpawnParameters.Instigator = this;
@@ -236,15 +234,9 @@ void ATurretPawn::HealthCheckedDeath(AActor* HealthKeeper, UTOHealthComponent* P
 
 			DestroyActor(HealthKeeper);
 		}
-	}
-}
 
-void ATurretPawn::PrintCurrentHealth(
-	AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent)
-{
-	UKismetSystemLibrary::PrintString(
-		HealthKeeper, FString::Printf(TEXT("Health: %f"), ParameterHealthComponent->Health),
-		true, false, FColor::Green, 3.f);
+		UpdateHealthBarComponent(HealthKeeper, ParameterHealthComponent);
+	}
 }
 
 void ATurretPawn::UpdateHealthBarComponent(

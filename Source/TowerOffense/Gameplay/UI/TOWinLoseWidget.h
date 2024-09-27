@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TOGameModeBase.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
 
 #include "TOWinLoseWidget.generated.h"
 

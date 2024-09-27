@@ -13,9 +13,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Landscape.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Projectile.h"
-#include "TOCameraShake.h"
-#include "TOPlayerController.h"
+#include "TowerOffense/Gameplay/Other/Projectile.h"
+#include "TowerOffense/Gameplay/Other/TOCameraShake.h"
+#include "TowerOffense/Gameplay/ModeControl/TOPlayerController.h"
 
 ATankPawn::ATankPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -308,7 +308,7 @@ void ATankPawn::BeginPlay()
 	{
 		if (const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
 		{
-			if (auto* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 			{
 				Subsystem->AddMappingContext(TankMappingContext, 0);
 			}
@@ -359,8 +359,10 @@ void ATankPawn::Tick(float DeltaTime)
 
 	GetWorld()->LineTraceSingleByChannel(
 		ShootingPoint, ProjectileSpawnPoint->GetComponentLocation(), 
-		UKismetMathLibrary::GetForwardVector(ProjectileSpawnPoint->GetForwardVector().Rotation()
-			+ FRotator(PitchAimingRotator, 0.0f, 0.0f)) * 100000.f,
+		ProjectileSpawnPoint->GetComponentLocation() + (FRotator(
+		ProjectileSpawnPoint->GetForwardVector().Rotation().Pitch + PitchAimingRotator,
+		ProjectileSpawnPoint->GetForwardVector().Rotation().Yaw,
+		ProjectileSpawnPoint->GetForwardVector().Rotation().Roll)).GetNormalized().Vector() * 100000.f,
 		ECollisionChannel::ECC_Camera);
 
 	if (ShootingPoint.Location != FVector(0.f,0.f,0.f))

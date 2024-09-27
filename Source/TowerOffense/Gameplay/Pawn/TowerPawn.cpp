@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Projectile.h"
+#include "TowerOffense/Gameplay/Other/Projectile.h"
 
 ATowerPawn::ATowerPawn(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)

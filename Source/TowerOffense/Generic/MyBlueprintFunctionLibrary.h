@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "TowerOffense/Gameplay/TOGameModeBase.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
 
 #include "MyBlueprintFunctionLibrary.generated.h"
 

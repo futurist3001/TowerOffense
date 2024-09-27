@@ -2,7 +2,7 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "TOGameModeBase.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
 
 void UTOWinLoseWidget::SetEndGameStateTextColor(EGamePhase EndGameState)
 {

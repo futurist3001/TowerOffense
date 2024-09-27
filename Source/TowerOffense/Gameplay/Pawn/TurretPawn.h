@@ -2,8 +2,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "TowerOffense/Generic/TeamMemberInterface.h"
-#include "TOGameModeBase.h"
-#include "TOHealthComponent.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
+#include "TowerOffense/Gameplay/Other/TOHealthComponent.h"
 
 #include "TurretPawn.generated.h"
 
@@ -97,6 +97,7 @@ protected:
 	float RotationCurrentTime;
 	FVector Start; // For fire start point
 	FVector End; // For fire end point
+	FVector ShootDirection;
 	UAudioComponent* TurretRotationAudioComponent;
 
 public:
@@ -111,10 +112,6 @@ public:
 
 	UFUNCTION()
 	void HealthCheckedDeath(
-		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
-
-	UFUNCTION()
-	void PrintCurrentHealth(
 		AActor* HealthKeeper, UTOHealthComponent* ParameterHealthComponent);
 
 	UFUNCTION()

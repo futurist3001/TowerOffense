@@ -1,7 +1,5 @@
 #include "UActorMoverComponent.h"
 
-#include "TowerOffense/Gameplay/TOGameModeBase.h"
-
 UUActorMoverComponent::UUActorMoverComponent(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {

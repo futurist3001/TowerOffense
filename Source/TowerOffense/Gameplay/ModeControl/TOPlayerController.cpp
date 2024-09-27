@@ -3,11 +3,11 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/ProgressBar.h"
 #include "Kismet/GameplayStatics.h"
-#include "TankPawn.h"
-#include "TOHUDWidget.h"
-#include "TOPreparationWidget.h"
-#include "TOScopeWidget.h"
-#include "TOWinLoseWidget.h"
+#include "TowerOffense/Gameplay/Pawn/TankPawn.h"
+#include "TowerOffense/Gameplay/UI/TOHUDWidget.h"
+#include "TowerOffense/Gameplay/UI/TOPreparationWidget.h"
+#include "TowerOffense/Gameplay/UI/TOScopeWidget.h"
+#include "TowerOffense/Gameplay/UI/TOWinLoseWidget.h"
 
 void ATOPlayerController::SwitchScopeVisibility()
 {
@@ -31,11 +31,11 @@ void ATOPlayerController::BeginPlay()
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATOPlayerController::DestroyPreparationWidget, 4.f, false);
 
-	auto* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
+	ATOGameModeBase* GameMode = Cast<ATOGameModeBase>(GetWorld()->GetAuthGameMode());
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::LimitPlayerMovement);
 	GameMode->OnGamePhaseChanged.AddDynamic(this, &ThisClass::CreateWinLoseWidget);
 
-	if (auto* TankPawn = GetPawn<ATankPawn>(); TankPawn && HUDWidget)
+	if (ATankPawn* TankPawn = GetPawn<ATankPawn>(); TankPawn && HUDWidget)
 	{
 		TankPawn->HealthComponent->HealthChanged.AddDynamic(this, &ATOPlayerController::UpdateHUDHealth);
 	}

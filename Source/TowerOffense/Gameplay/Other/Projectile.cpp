@@ -4,7 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TowerOffense/Generic/TeamMemberInterface.h"
-#include "TurretPawn.h"
+#include "TowerOffense/Gameplay/Pawn/TurretPawn.h"
 
 AProjectile::AProjectile(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)

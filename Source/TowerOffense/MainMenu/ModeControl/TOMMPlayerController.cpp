@@ -1,9 +1,9 @@
 #include "TOMMPlayerController.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "PageLevelWidget.h"
+#include "TowerOffense/MainMenu/UI/PageLevelWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "TOMainMenuWidget.h"
+#include "TowerOffense/MainMenu/UI/TOMainMenuWidget.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
 void ATOMMPlayerController::BeginPlay()

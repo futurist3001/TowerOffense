@@ -1,10 +1,10 @@
 #include "TOPreparationWidget.h"
 
 #include "Components/TextBlock.h"
-#include "TOGameModeBase.h"
+#include "TowerOffense/Gameplay/ModeControl/TOGameModeBase.h"
 
 void UTOPreparationWidget::SetPreparationText()
 {
-	auto* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
+	ATOGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ATOGameModeBase>();
 	TextPreparation->SetText(GameMode->GetPreparationText());
 }

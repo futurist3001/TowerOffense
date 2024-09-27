@@ -1,8 +1,8 @@
 #include "TOMainMenuWidget.h"
 
 #include "Components/Button.h"
-#include "TOMMGameModeBase.h"
-#include "TOMMPlayerController.h"
+#include "TowerOffense/MainMenu/ModeControl/TOMMGameModeBase.h"
+#include "TowerOffense/MainMenu/ModeControl/TOMMPlayerController.h"
 #include "TowerOffense/Generic/LevelSystem.h"
 
 void UTOMainMenuWidget::NativeConstruct()
